@@ -15686,7 +15686,7 @@ function commitBasline(parameters) {
         let gitCommand = `  git status
                             git config --global user.name "${process.env.GITHUB_ACTOR}"
                             git config --global user.email "username@users.noreply.github.com"
-                            git add -f "${baselineFileName}"
+                            git add "${baselineFileName}"
                             git commit -a -m "Veracode Baseline File push from pipeline"
                             git push -u origin ${parameters.store_baseline_file_branch}
                             `;
