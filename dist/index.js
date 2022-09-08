@@ -15688,7 +15688,7 @@ function commitBasline(parameters) {
                             git config --global user.email "username@users.noreply.github.com"
                             git add -f "${baselineFileName}"
                             git commit -a -m "Veracode Baseline File push from pipeline"
-                            git push origin ${parameters.store_baseline_file_branch}
+                            git push -u origin ${parameters.store_baseline_file_branch}
                             `;
         core.info('Git Command: ' + gitCommand);
         if (parameters.debug == 1) {
