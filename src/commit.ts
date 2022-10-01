@@ -33,6 +33,8 @@ export function commitBasline (parameters:any)  {
         //git pull https://github.com/${process.env.GITHUB_REPOSITORY}.git ${parameters.store_baseline_file_branch}
         //HEAD:${parameters.store_baseline_file_branch}
         //git config pull.rebase true
+
+        /*
         let gitCommand = `  git status
                             git config --global user.name "${ process.env.GITHUB_ACTOR }"
                             git config --global user.email "username@users.noreply.github.com"
@@ -41,6 +43,16 @@ export function commitBasline (parameters:any)  {
                             git commit -a -m "Veracode Baseline File push from pipeline"
                             git push -f -u origin ${parameters.store_baseline_file_branch}
                             `
+        */
+
+        let gitCommand = `git config --global user.name "${ process.env.GITHUB_ACTOR }"
+        git config --global user.email "username@users.noreply.github.com"
+        git add "${baselineFileName}"
+        git stash
+        git pull origin ${parameters.store_baseline_file_branch} || echo "Couldn't find remote branch"
+        git checkout stash -- .
+        git commit -m "Veracode Baseline File push from pipeline"
+        git push origin HEAD:${parameters.store_baseline_file_branch} --force-with-lease`
 
         core.info('Git Command: '+gitCommand)
         
