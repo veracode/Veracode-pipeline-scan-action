@@ -150,7 +150,6 @@ async function run (parameters:any){
     const uploadResult = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options)
 
 
-
     if ( parameters.store_baseline_file == 'true'){
         core.info('Baseline File should be stored')
         let commitCommandOutput:any = await commitBasline(parameters)
