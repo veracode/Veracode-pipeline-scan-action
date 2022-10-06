@@ -141,13 +141,13 @@ async function run (parameters:any){
         'results.json',
         'filtered_results.json'
     ]
-    const rootDirectory = '/home/runner/work/test-action/test-action/'
+
+    const rootDirectory = process.cwd()
     const options = {
         continueOnError: true
     }
 
     const uploadResult = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options)
-
 
 
     if ( parameters.store_baseline_file == 'true'){

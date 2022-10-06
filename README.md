@@ -4,7 +4,7 @@ This action is published as a pre-release, please give it a try and report any i
 
 # Veracode Pipeline Scan Action
 
-Veracode Pipeline Scan Action runs the Veracode pipeline-scan as an action on any GitHub pipleine
+Veracode Pipeline Scan Action runs the Veracode pipeline-scan as an action on any GitHub pipeline
 
 The only pre-requisites is to have the application compiled/packaged according the Veracode Packaging Instructions [here](https://docs.veracode.com/r/compilation_packaging) 
 
@@ -96,7 +96,7 @@ git checkout stash -- .
 git commit -m "Veracode Baseline File push from pipeline"   
 git push origin HEAD:${parameters.store_baseline_file_branch} --force-with-lease  
 ```  
-Make sure that doesn't have any side effects on your repository. If you are not sure, don't store the baseline file from the action itself, instead strore it as an artefact and commit/push it yourself to the place where it should be stored.  
+Make sure that doesn't have any side effects on your repository. If you are not sure, don't store the baseline file from the action itself, instead store it as an artifact and commit/push it yourself to the place where it should be stored.  
 
 ## Examples  
 All examples follow the same strucutre, the will all `need` the `build` to be finished before the they will start running. Veraocde's static analysis is mainly binary static analysis, therefore a compile/build action is required before a pipeline scan can be started. Please read about the packaging and compilation requirements here: https://docs.veracode.com/r/compilation_packaging.  
@@ -124,7 +124,7 @@ The basic yml
 
         # run the pipeline scan action
         - name: pipeline-scan action step
-          id: pipelien-scan
+          id: pipeline-scan
           uses: veracode/Veracode-pipeline-scan-action@latest
           with:
             vid: ${{ secrets.VID }}
@@ -154,7 +154,7 @@ Rate the findings according to a policy and fail the build
 
         # run the pipeline scan action
         - name: pipeline-scan action step
-          id: pipelien-scan
+          id: pipeline-scan
           uses: veracode/Veracode-pipeline-scan-action@latest
           with:
             vid: ${{ secrets.VID }}
@@ -186,7 +186,7 @@ Sort out previous findings using a baseline file
 
         # run the pipeline scan action
         - name: pipeline-scan action step
-          id: pipelien-scan
+          id: pipeline-scan
           uses: veracode/Veracode-pipeline-scan-action@latest
           with:
             vid: ${{ secrets.VID }}
@@ -219,7 +219,7 @@ Sort out previous findings using a baseline file, create a new baseline file and
 
         # run the pipeline scan action
         - name: pipeline-scan action step
-          id: pipelien-scan
+          id: pipeline-scan
           uses: veracode/Veracode-pipeline-scan-action@latest
           with:
             vid: ${{ secrets.VID }}

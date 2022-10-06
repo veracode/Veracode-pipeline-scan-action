@@ -15860,7 +15860,7 @@ function run(parameters) {
             'results.json',
             'filtered_results.json'
         ];
-        const rootDirectory = '/home/runner/work/test-action/test-action/';
+        const rootDirectory = process.cwd();
         const options = {
             continueOnError: true
         };
