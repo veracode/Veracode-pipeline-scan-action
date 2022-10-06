@@ -1,4 +1,4 @@
-name: 'Veracode Pipeline-Scan'
+name: 'Veracode Pipeline-Scan Action'
 description: 'Upload files to veracode and start a static pipeline-scan.'
 inputs:
   vid:
