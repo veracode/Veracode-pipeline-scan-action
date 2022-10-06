@@ -15860,11 +15860,13 @@ function run(parameters) {
             'results.json',
             'filtered_results.json'
         ];
-        const env = process.env;
-        core.info('Environment ' + env);
-        const directory = process.cwd();
-        core.info('Directory ' + directory);
-        const rootDirectory = '/home/runner/work/test-action/test-action/';
+        /*
+        const env = process.env
+        core.info('Environment '+ env )
+        const directory = process.cwd()
+        core.info('Directory '+ directory )
+        */
+        const rootDirectory = process.cwd();
         const options = {
             continueOnError: true
         };
