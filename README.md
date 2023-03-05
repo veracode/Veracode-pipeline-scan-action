@@ -1,7 +1,3 @@
-# THIS IS A PRE-RELEASE  
-This action is published as a pre-release, please give it a try and report any issues, unexpected behaviour or updates.  
-  
-
 # Veracode Pipeline Scan Action
 
 Veracode Pipeline Scan Action runs the Veracode pipeline-scan as an action on any GitHub pipeline
@@ -125,7 +121,7 @@ The basic yml
         # run the pipeline scan action
         - name: pipeline-scan action step
           id: pipeline-scan
-          uses: veracode/Veracode-pipeline-scan-action@latest
+          uses: veracode/Veracode-pipeline-scan-action@v1.0.3
           with:
             vid: ${{ secrets.VID }}
             vkey: ${{ secrets.VKEY }}
@@ -155,7 +151,7 @@ Rate the findings according to a policy and fail the build
         # run the pipeline scan action
         - name: pipeline-scan action step
           id: pipeline-scan
-          uses: veracode/Veracode-pipeline-scan-action@latest
+          uses: veracode/Veracode-pipeline-scan-action@v1.0.3
           with:
             vid: ${{ secrets.VID }}
             vkey: ${{ secrets.VKEY }}
@@ -187,7 +183,7 @@ Sort out previous findings using a baseline file
         # run the pipeline scan action
         - name: pipeline-scan action step
           id: pipeline-scan
-          uses: veracode/Veracode-pipeline-scan-action@latest
+          uses: veracode/Veracode-pipeline-scan-action@v1.0.3
           with:
             vid: ${{ secrets.VID }}
             vkey: ${{ secrets.VKEY }}
@@ -220,7 +216,7 @@ Sort out previous findings using a baseline file, create a new baseline file and
         # run the pipeline scan action
         - name: pipeline-scan action step
           id: pipeline-scan
-          uses: veracode/Veracode-pipeline-scan-action@latest
+          uses: veracode/Veracode-pipeline-scan-action@v1.0.3
           with:
             vid: ${{ secrets.VID }}
             vkey: ${{ secrets.VKEY }}
