@@ -15874,7 +15874,7 @@ function run(parameters) {
         core.info('check if we run on a pull request');
         let pullRequest = process.env.GITHUB_REF;
         let isPR = pullRequest === null || pullRequest === void 0 ? void 0 : pullRequest.indexOf("pull");
-        if (isPR >= 1) {
+        if (isPR >= 1 && scanCommandOutput.trim()) {
             core.info("This run is part of a PR, should add some PR comment");
             const context = github.context;
             const repository = process.env.GITHUB_REPOSITORY;

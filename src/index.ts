@@ -161,7 +161,7 @@ async function run (parameters:any){
     let pullRequest = process.env.GITHUB_REF
     let isPR:any = pullRequest?.indexOf("pull")
 
-    if ( isPR >= 1 ){
+    if ( isPR >= 1 && scanCommandOutput.trim() ){
         core.info("This run is part of a PR, should add some PR comment")
 
         const context = github.context
