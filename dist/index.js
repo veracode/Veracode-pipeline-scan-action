@@ -15876,40 +15876,46 @@ function run(parameters) {
         let isPR = pullRequest === null || pullRequest === void 0 ? void 0 : pullRequest.indexOf("pull");
         if (isPR >= 1) {
             core.info("This run is part of a PR, should add some PR comment");
-            const context = github.context;
-            const repository = process.env.GITHUB_REPOSITORY;
-            const token = core.getInput("token");
-            const repo = repository.split("/");
-            const commentID = (_a = context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number;
-            //creating the body for the comment
-            let commentBody = scanCommandOutput;
-            commentBody = commentBody.substring(commentBody.indexOf('Scan Summary'));
-            commentBody = commentBody.replace('===\n---', '===\n<details><summary>details</summary><p>\n---');
-            commentBody = commentBody.replace('---\n\n===', '---\n</p></details>\n===');
-            commentBody = commentBody.replace(/\n/g, '<br>');
-            commentBody = '<br>![](https://www.veracode.com/themes/veracode_new/library/img/veracode-black-hires.svg)<br>' + commentBody;
-            core.info('Comment Body ' + commentBody);
-            if (parameters.debug == 1) {
-                core.info('---- DEBUG OUTPUT START ----');
-                core.info('---- index.ts / run() check if on PR  ----');
-                core.info('---- Repository: ' + repository);
-                core.info('---- Token: ' + token);
-                core.info('---- Comment ID: ' + commentID);
-                //core.info('---- Context: '+JSON.stringify(context))
-                core.info('---- DEBUG OUTPUT END ----');
+            if (scanCommandOutput.length >= 1) {
+                core.info('Results are not empty - adding PR comment');
+                const context = github.context;
+                const repository = process.env.GITHUB_REPOSITORY;
+                const token = core.getInput("token");
+                const repo = repository.split("/");
+                const commentID = (_a = context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number;
+                //creating the body for the comment
+                let commentBody = scanCommandOutput;
+                commentBody = commentBody.substring(commentBody.indexOf('Scan Summary'));
+                commentBody = commentBody.replace('===\n---', '===\n<details><summary>details</summary><p>\n---');
+                commentBody = commentBody.replace('---\n\n===', '---\n</p></details>\n===');
+                commentBody = commentBody.replace(/\n/g, '<br>');
+                commentBody = '<br>![](https://www.veracode.com/themes/veracode_new/library/img/veracode-black-hires.svg)<br>' + commentBody;
+                core.info('Comment Body ' + commentBody);
+                if (parameters.debug == 1) {
+                    core.info('---- DEBUG OUTPUT START ----');
+                    core.info('---- index.ts / run() check if on PR  ----');
+                    core.info('---- Repository: ' + repository);
+                    core.info('---- Token: ' + token);
+                    core.info('---- Comment ID: ' + commentID);
+                    //core.info('---- Context: '+JSON.stringify(context))
+                    core.info('---- DEBUG OUTPUT END ----');
+                }
+                try {
+                    const octokit = github.getOctokit(token);
+                    const { data: comment } = yield octokit.rest.issues.createComment({
+                        owner: repo[0],
+                        repo: repo[1],
+                        issue_number: commentID,
+                        body: commentBody,
+                    });
+                    core.info('Adding scan results as comment to PR #' + commentID);
+                }
+                catch (error) {
+                    core.info(error);
+                }
             }
-            try {
-                const octokit = github.getOctokit(token);
-                const { data: comment } = yield octokit.rest.issues.createComment({
-                    owner: repo[0],
-                    repo: repo[1],
-                    issue_number: commentID,
-                    body: commentBody,
-                });
-                core.info('Adding scan results as comment to PR #' + commentID);
-            }
-            catch (error) {
-                core.info(error);
+            else {
+                core.info('Results are empty - no need to add PR comment');
             }
         }
         else {
