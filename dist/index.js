@@ -15807,6 +15807,8 @@ const summary_output_file = core.getInput('summary_output_file', { required: fal
 parameters['summary_output_file'] = summary_output_file;
 const json_output = core.getInput('json_output', { required: false });
 parameters['json_output'] = json_output;
+const include = core.getInput('include', { required: false });
+parameters['incude'] = include;
 /*
 const json_output_file = core.getInput('json_output_file', {required: false} );
 parameters['json_output_file'] = json_output_file
