@@ -8,7 +8,7 @@ The only pre-requisites is to have the application compiled/packaged according t
 
 The `pipeline-scan action` is designed to be used in a CI/CD pipeline to submit a binary or source code zip to Veracode for security scanning. It supports scans for Java, JavaScript, Scala, Kotlin, Groovy and Android code.
 
-For more information on Pipeline Scan visit Veracode Help Center Page: https://help.veracode.com/reader/tS9CaFwL4_lbIEWWomsJoA/ovfZGgu96UINQxIuTqRDwg
+For more information on Pipeline Scan, visit the [Veracode Docs](https://docs.veracode.com/r/Pipeline_Scan).
 
 ## Usage
 
