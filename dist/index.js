@@ -15603,7 +15603,12 @@ function checkParameters(parameters) {
                     core.info('---- DEBUG OUTPUT END ----');
                 }
                 if (key != "debug" && key != "store_baseline_file" && key != "store_baseline_file_branch" && key != "create_baseline_from" && key != "fail_build") {
-                    scanCommand += " --" + key + " " + value;
+                    if (key == "include") {
+                        scanCommand += " --" + key + " '" + value + "'";
+                    }
+                    else {
+                        scanCommand += " --" + key + " " + value;
+                    }
                 }
                 if (parameters.debug == 1) {
                     core.info('---- DEBUG OUTPUT START ----');
