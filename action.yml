@@ -92,6 +92,9 @@ inputs:
   fail_build:
     description: 'Fail the build upon findings. Takes true or false'
     required: false
+  include: 
+    description: 'Enter a case-sensitive, comma-separated list of name patterns that represent the names of the modules to scan as top-level modules. Veracode identifies these modules during prescan. The * wildcard matches zero or more characters. The ? wildcard matches exactly one character. For example, to include various module names that contain module: --include "module 1, module-*, module2.jar". The scan results show the names of the modules that Veracode identified and the modules included in the scan. This parameter does not pause, stop, or impact the performance of your pipeline.'
+    required: false
   
 runs:
   using: 'node16'

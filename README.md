@@ -70,6 +70,7 @@ The tool will need some information passed to it as parameters (many are optiona
   * project_ref
   * app_id
   * development_stage
+  * include
 
 * Baseline file
   * if a baseline file should be stored from the scan all paramters are required
