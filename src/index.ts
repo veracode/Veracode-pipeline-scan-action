@@ -72,7 +72,7 @@ const json_output = core.getInput('json_output', {required: false} );
 parameters['json_output'] = json_output
 
 const include = core.getInput('include', {required: false} );
-parameters['incude'] = include
+parameters['include'] = include
 
 /*
 const json_output_file = core.getInput('json_output_file', {required: false} );
