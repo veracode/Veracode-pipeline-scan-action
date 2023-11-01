@@ -41,6 +41,16 @@ export async function checkParameters (parameters:any):Promise<string>  {
         const appUrl = apiUrl+uriPath+queryparams
         //const headers = {'Authorization':auth.generateHeader(appUrl, 'GET', apiUrl, cleanedID, cleanedKEY)}
 
+        core.info('---- DEBUG OUTPUT START ----')
+        core.info('---- check-parameters.ts / checkParameters() - if veracode_policy_name is set----')
+        core.info('---- Response Data ----')
+        core.info('---- URI Path: '+uriPath)
+        core.info('---- Query Params: '+queryparams)
+        core.info('---- Path: '+path)
+        core.info('---- App Url: '+appUrl)
+        core.info('---- DEBUG OUTPUT END ----')
+
+
         try {
             const response = await axios.request({
                 method: 'GET',

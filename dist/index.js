@@ -18613,6 +18613,14 @@ function checkParameters(parameters) {
             const path = uriPath + queryparams;
             const appUrl = apiUrl + uriPath + queryparams;
             //const headers = {'Authorization':auth.generateHeader(appUrl, 'GET', apiUrl, cleanedID, cleanedKEY)}
+            core.info('---- DEBUG OUTPUT START ----');
+            core.info('---- check-parameters.ts / checkParameters() - if veracode_policy_name is set----');
+            core.info('---- Response Data ----');
+            core.info('---- URI Path: ' + uriPath);
+            core.info('---- Query Params: ' + queryparams);
+            core.info('---- Path: ' + path);
+            core.info('---- App Url: ' + appUrl);
+            core.info('---- DEBUG OUTPUT END ----');
             try {
                 const response = yield axios_1.default.request({
                     method: 'GET',
