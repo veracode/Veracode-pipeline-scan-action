@@ -42,7 +42,7 @@ export async function checkParameters (parameters:any):Promise<string>  {
         //const headers = {'Authorization':auth.generateHeader(appUrl, 'GET', apiUrl, cleanedID, cleanedKEY)}
 
         core.info('---- DEBUG OUTPUT START ----')
-        core.info('---- check-parameters.ts / checkParameters() - if veracode_policy_name is set----')
+        core.info('---- check-parameters.ts / checkParameters() - if veracode_policy_name is set - show parameters ----')
         core.info('---- Response Data ----')
         core.info('---- URI Path: '+uriPath)
         core.info('---- Query Params: '+queryparams)
@@ -61,7 +61,7 @@ export async function checkParameters (parameters:any):Promise<string>  {
             });
             if (parameters.debug == 1 ){
                 core.info('---- DEBUG OUTPUT START ----')
-                core.info('---- check-parameters.ts / checkParameters() - if veracode_policy_name is set----')
+                core.info('---- check-parameters.ts / checkParameters() - find the policy via API----')
                 core.info('---- Response Data ----')
                 core.info(JSON.stringify(response.data))
                 core.info('---- DEBUG OUTPUT END ----')
@@ -95,7 +95,7 @@ export async function checkParameters (parameters:any):Promise<string>  {
                     scanCommand += " --policy_file "+policyFileName+".json"
                 }
             }
-            else if ( response.data.total_elements != 0 ){
+            else if ( response.data.total_elements != "0" ){
                 core.info('NO POLICY FOUND - NO POLICY WILL BE USED TO RATE FINDINGS')
             }
             else {
@@ -103,7 +103,7 @@ export async function checkParameters (parameters:any):Promise<string>  {
             }
           } catch (err: any) {
             core.info('---- DEBUG OUTPUT START ----')
-            core.info('---- check-parameters.ts / checkParameters() - if veracode_policy_name is set----')
+            core.info('---- check-parameters.ts / checkParameters() - find policy via API catch error ----')
             core.info('---- Response Data ----')
             core.info(err.response)
             core.info('---- DEBUG OUTPUT END ----')

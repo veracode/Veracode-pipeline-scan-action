@@ -18614,7 +18614,7 @@ function checkParameters(parameters) {
             const appUrl = apiUrl + uriPath + queryparams;
             //const headers = {'Authorization':auth.generateHeader(appUrl, 'GET', apiUrl, cleanedID, cleanedKEY)}
             core.info('---- DEBUG OUTPUT START ----');
-            core.info('---- check-parameters.ts / checkParameters() - if veracode_policy_name is set----');
+            core.info('---- check-parameters.ts / checkParameters() - if veracode_policy_name is set - show parameters ----');
             core.info('---- Response Data ----');
             core.info('---- URI Path: ' + uriPath);
             core.info('---- Query Params: ' + queryparams);
@@ -18631,7 +18631,7 @@ function checkParameters(parameters) {
                 });
                 if (parameters.debug == 1) {
                     core.info('---- DEBUG OUTPUT START ----');
-                    core.info('---- check-parameters.ts / checkParameters() - if veracode_policy_name is set----');
+                    core.info('---- check-parameters.ts / checkParameters() - find the policy via API----');
                     core.info('---- Response Data ----');
                     core.info(JSON.stringify(response.data));
                     core.info('---- DEBUG OUTPUT END ----');
@@ -18659,7 +18659,7 @@ function checkParameters(parameters) {
                         scanCommand += " --policy_file " + policyFileName + ".json";
                     }
                 }
-                else if (response.data.total_elements != 0) {
+                else if (response.data.total_elements != "0") {
                     core.info('NO POLICY FOUND - NO POLICY WILL BE USED TO RATE FINDINGS');
                 }
                 else {
@@ -18668,7 +18668,7 @@ function checkParameters(parameters) {
             }
             catch (err) {
                 core.info('---- DEBUG OUTPUT START ----');
-                core.info('---- check-parameters.ts / checkParameters() - if veracode_policy_name is set----');
+                core.info('---- check-parameters.ts / checkParameters() - find policy via API catch error ----');
                 core.info('---- Response Data ----');
                 core.info(err.response);
                 core.info('---- DEBUG OUTPUT END ----');
