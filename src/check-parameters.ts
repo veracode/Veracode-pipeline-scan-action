@@ -71,8 +71,13 @@ export async function checkParameters (parameters:any):Promise<string>  {
                 }
                 
             }
-          } catch (error) {
-            console.error(error);
+          } catch (err: any) {
+            core.info('---- DEBUG OUTPUT START ----')
+            core.info('---- check-parameters.ts / checkParameters() - if veracode_policy_name is set----')
+            core.info('---- Response Data ----')
+            core.info(err.response)
+            core.info('---- DEBUG OUTPUT END ----')
+            console.error(err.response);
         }
 
         
