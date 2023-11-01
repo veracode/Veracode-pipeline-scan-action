@@ -51,7 +51,7 @@ export async function checkParameters (parameters:any):Promise<string>  {
         core.info('---- DEBUG OUTPUT END ----')
 
 
-        try {
+//        try {
             const response = await axios.request({
                 method: 'GET',
                 headers: {
@@ -101,7 +101,8 @@ export async function checkParameters (parameters:any):Promise<string>  {
             else {
                 core.info('NO POLICY FOUND - NO POLICY WILL BE USED TO RATE FINDINGS')
             }
-          } catch (err: any) {
+/*
+        } catch (err: any) {
             core.info('---- DEBUG OUTPUT START ----')
             core.info('---- check-parameters.ts / checkParameters() - find policy via API catch error ----')
             core.info('---- Response Data ----')
@@ -109,7 +110,7 @@ export async function checkParameters (parameters:any):Promise<string>  {
             core.info('---- DEBUG OUTPUT END ----')
             console.error(err.response);
         }
-
+*/
         
 
 
