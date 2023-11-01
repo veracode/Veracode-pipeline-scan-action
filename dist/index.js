@@ -18636,26 +18636,31 @@ function checkParameters(parameters) {
                     core.info(JSON.stringify(response.data));
                     core.info('---- DEBUG OUTPUT END ----');
                 }
-                if (response.data._embedded.policy_versions[0].type == 'BUILTIN') {
-                    core.info('Built-in Policy is required');
-                    core.info('Setting policy to ' + parameters.veracode_policy_name);
-                    scanCommand += ' --policy_name ' + parameters.veracode_policy_name;
-                }
-                else if (response.data._embedded.policy_versions[0].type == 'CUSTOMER') {
-                    core.info('Custom Policy is required');
-                    core.info('Downloading custom policy file and setting pilicy to ' + parameters.veracode_policy_name);
-                    policyCommand = 'java -jar pipeline-scan.jar -vid ' + parameters.vid + ' -vkey ' + parameters.vkey + ' --request_policy "' + parameters.veracode_policy_name + '"';
-                    const policyDownloadOutput = yield (0, pipeline_scan_1.getPolicyFile)(policyCommand, parameters);
-                    if (parameters.debug == 1) {
-                        core.info('---- DEBUG OUTPUT START ----');
-                        core.info('---- check-parameters.ts / checkParameters() - if veracode_policy_name is set and custom policy is required ----');
-                        core.info('---- Policy Download command: ' + policyCommand);
-                        core.info('---- Policy Downlaod Output: ' + policyDownloadOutput);
-                        core.info('---- DEBUG OUTPUT END ----');
+                if (response.data._embedded.page.total_elements != 0) {
+                    if (response.data._embedded.policy_versions[0].type == 'BUILTIN') {
+                        core.info('Built-in Policy is required');
+                        core.info('Setting policy to ' + parameters.veracode_policy_name);
+                        scanCommand += ' --policy_name ' + parameters.veracode_policy_name;
                     }
-                    var policyFileName = parameters.veracode_policy_name.replace(/ /gi, "_");
-                    core.info('Policy Filen Name: ' + policyFileName);
-                    scanCommand += " --policy_file " + policyFileName + ".json";
+                    else if (response.data._embedded.policy_versions[0].type == 'CUSTOMER') {
+                        core.info('Custom Policy is required');
+                        core.info('Downloading custom policy file and setting pilicy to ' + parameters.veracode_policy_name);
+                        policyCommand = 'java -jar pipeline-scan.jar -vid ' + parameters.vid + ' -vkey ' + parameters.vkey + ' --request_policy "' + parameters.veracode_policy_name + '"';
+                        const policyDownloadOutput = yield (0, pipeline_scan_1.getPolicyFile)(policyCommand, parameters);
+                        if (parameters.debug == 1) {
+                            core.info('---- DEBUG OUTPUT START ----');
+                            core.info('---- check-parameters.ts / checkParameters() - if veracode_policy_name is set and custom policy is required ----');
+                            core.info('---- Policy Download command: ' + policyCommand);
+                            core.info('---- Policy Downlaod Output: ' + policyDownloadOutput);
+                            core.info('---- DEBUG OUTPUT END ----');
+                        }
+                        var policyFileName = parameters.veracode_policy_name.replace(/ /gi, "_");
+                        core.info('Policy Filen Name: ' + policyFileName);
+                        scanCommand += " --policy_file " + policyFileName + ".json";
+                    }
+                }
+                else if (response.data._embedded.page.total_elements != 0) {
+                    core.info('NO POLICY FOUND - NO POLICY WILL BE USED TO RATE FINDINGS');
                 }
             }
             catch (err) {
