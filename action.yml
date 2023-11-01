@@ -14,8 +14,10 @@ inputs:
     description: 'GITHUB_TOKEN or a repo scoped PAT.'
     default: ${{ github.token }}
     required: true
+  veracode_policy_name:
+    description: 'Name of the Veracode default policy or custom-built policy to apply to the scan results.'
   request_policy:
-    description: 'Name of the security policy to download as a file. Required only if you want to download the configuration for a custom policy defined by your organization. After downloading the policy, you can provide this file in a subsequent command using the policy_file parameter.'
+    description: 'DPERECATED, WILL BE REMOVED WITH NEXT VERSION - Name of the security policy to download as a file. Required only if you want to download the configuration for a custom policy defined by your organization. After downloading the policy, you can provide this file in a subsequent command using the policy_file parameter.'
     required: false
   fail_on_severity:
     description: 'Fail the pipeline job if the scan finds flaws of the specified severities. Enter a comma-separated list of severities in quotation marks.'
@@ -27,10 +29,10 @@ inputs:
     description: 'Filter the flaws that exist in the specified baseline file and show only the additional flaws in the current scan.'
     required: false
   policy_name:
-    description: 'Name of the Veracode default policy rule to apply to the scan results. You can only use this parameter with a Veracode default policy.'
+    description: 'DPERECATED, WILL BE REMOVED WITH NEXT VERSION - Name of the Veracode default policy rule to apply to the scan results. You can only use this parameter with a Veracode default policy.'
     required: false
   policy_file:
-    description: 'Name of the local policy file you want to apply to the scan results. To download this file, use the --request_policy parameter.'
+    description: 'Name of the local policy file you want to apply to the scan results.'
     required: false
   timeout:
     description: 'Amount of time, in minutes, for the Pipeline Scan to wait before reporting an unsuccessful scan if the scan does not complete. Default is 60 minutes, which is also the maximum value.'
