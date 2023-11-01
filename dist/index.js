@@ -18610,10 +18610,17 @@ function checkParameters(parameters) {
             core.info('Check whether a built-in or a custom policy is required');
             const uriPath = '/appsec/v1/policies';
             const queryparams = '?name=' + encodeURI(parameters.veracode_policy_name);
+            const path = uriPath + queryparams;
             const appUrl = apiUrl + uriPath + queryparams;
-            const headers = { 'Authorization': auth.generateHeader(appUrl, 'GET', apiUrl, cleanedID, cleanedKEY) };
+            //const headers = {'Authorization':auth.generateHeader(appUrl, 'GET', apiUrl, cleanedID, cleanedKEY)}
             try {
-                const response = yield axios_1.default.get(appUrl, { headers });
+                const response = yield axios_1.default.request({
+                    method: 'GET',
+                    headers: {
+                        'Authorization': auth.generateHeader(path, 'GET', apiUrl, cleanedID, cleanedKEY),
+                    },
+                    url: apiUrl + uriPath + queryparams
+                });
                 if (parameters.debug == 1) {
                     core.info('---- DEBUG OUTPUT START ----');
                     core.info('---- check-parameters.ts / checkParameters() - if veracode_policy_name is set----');
