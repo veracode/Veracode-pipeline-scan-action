@@ -67,7 +67,7 @@ export async function checkParameters (parameters:any):Promise<string>  {
                 core.info('---- DEBUG OUTPUT END ----')
             }
 
-            if ( response.data._embedded.page.total_elements != undefined ){
+            if ( response.data.page.total_elements != '0' ){
 
                 if ( response.data._embedded.policy_versions[0].type == 'BUILTIN' ){
                     core.info('Built-in Policy is required')
@@ -95,8 +95,8 @@ export async function checkParameters (parameters:any):Promise<string>  {
                     scanCommand += " --policy_file "+policyFileName+".json"
                 }
             }
-            else if ( response.data.total_elements != "0" ){
-                core.info('NO POLICY FOUND - NO POLICY WILL BE USED TO RATE FINDINGS')
+            else if ( response.data.total_elements == undefined ){
+                core.info('Something went wrong with fetching the correct policy')
             }
             else {
                 core.info('NO POLICY FOUND - NO POLICY WILL BE USED TO RATE FINDINGS')
