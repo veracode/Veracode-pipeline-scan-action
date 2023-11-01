@@ -72,7 +72,7 @@ export async function checkParameters (parameters:any):Promise<string>  {
                 if ( response.data._embedded.policy_versions[0].type == 'BUILTIN' ){
                     core.info('Built-in Policy is required')
                     core.info('Setting policy to '+parameters.veracode_policy_name)
-                    scanCommand += ' --policy_name '+parameters.veracode_policy_name
+                    scanCommand += ' --policy_name "'+parameters.veracode_policy_name+'"'
                 }
                 else if ( response.data._embedded.policy_versions[0].type == 'CUSTOMER' ){
                     core.info('Custom Policy is required')
