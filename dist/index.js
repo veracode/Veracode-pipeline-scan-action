@@ -18619,7 +18619,7 @@ function checkParameters(parameters) {
         if (parameters.veracode_policy_name != "") {
             core.info('Veracode Policy evaluation is required');
             core.info('Check the region to select the correct platform');
-            if (parameters.vid.include('vera01ei-')) {
+            if (parameters.vid.startsWith('vera01ei-')) {
                 var apiUrl = 'https://api.veracode.eu';
                 core.info('Region: EU');
             }
