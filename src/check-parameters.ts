@@ -87,7 +87,7 @@ export async function checkParameters (parameters:any):Promise<string>  {
                         core.info('---- DEBUG OUTPUT END ----')
                     }
 
-                    var policyFileName = parameters.request_policy.replace(/ /gi, "_")
+                    var policyFileName = parameters.veracode_policy_name.replace(/ /gi, "_")
                     core.info('Policy Filen Name: '+policyFileName)
                     scanCommand += " --policy_file "+policyFileName+".json"
                 
