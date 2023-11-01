@@ -18629,7 +18629,7 @@ function checkParameters(parameters) {
             }
             core.info('Check whether a built-in or a custom policy is required');
             const uriPath = '/appsec/v1/policies';
-            const queryparams = '?name=' + parameters.veracode_policy_name;
+            const queryparams = '?name=' + encodeURI(parameters.veracode_policy_name);
             const appUrl = apiUrl + uriPath + queryparams;
             const headers = { 'Authorization': (0, veracode_hmac_1.calculateAuthorizationHeader)(parameters.vid, parameters.vkey, apiUrl, uriPath, queryparams, 'GET') };
             try {
