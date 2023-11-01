@@ -1,7 +1,8 @@
 import * as core from '@actions/core'
 import { runScan, getPolicyFile } from './pipeline-scan'
 import axios from 'axios'
-import { calculateAuthorizationHeader } from './veracode-hmac'
+import * as auth from './auth'
+//import { calculateAuthorizationHeader } from './veracode-hmac'
 
 export async function checkParameters (parameters:any):Promise<string>  {
 
@@ -21,18 +22,23 @@ export async function checkParameters (parameters:any):Promise<string>  {
         core.info('Check the region to select the correct platform')
         if ( parameters.vid.startsWith('vera01ei-') ){
             var apiUrl = 'https://api.veracode.eu'
+            var cleanedID = parameters.vid?.replace('vera01ei-','') ?? '';
+            var cleanedKEY = parameters.vkey?.replace('vera01es-','') ?? '';
             core.info('Region: EU')
         }
         else {
             var apiUrl = 'https://api.veracode.com'
+            var cleanedID = parameters.vid
+            var cleanedKEY = parameters.vkey
             core.info('Region: US')
         }
         core.info('Check whether a built-in or a custom policy is required')
 
+        
         const uriPath = '/appsec/v1/policies'
         const queryparams = '?name='+encodeURI(parameters.veracode_policy_name)
         const appUrl = apiUrl+uriPath+queryparams
-        const headers = {'Authorization':calculateAuthorizationHeader(parameters.vid, parameters.vkey, apiUrl, uriPath, queryparams, 'GET')}
+        const headers = {'Authorization':auth.generateHeader(appUrl, 'GET', apiUrl, cleanedID, cleanedKEY)}
 
         try {
             const response = await axios.get(appUrl, { headers });
