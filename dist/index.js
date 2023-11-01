@@ -18636,7 +18636,7 @@ function checkParameters(parameters) {
                     core.info(JSON.stringify(response.data));
                     core.info('---- DEBUG OUTPUT END ----');
                 }
-                if (response.data._embedded.page.total_elements != 0) {
+                if (response.data.page.total_elements != "0" || response.data._embedded.page.total_elements != "0") {
                     if (response.data._embedded.policy_versions[0].type == 'BUILTIN') {
                         core.info('Built-in Policy is required');
                         core.info('Setting policy to ' + parameters.veracode_policy_name);
