@@ -29,6 +29,9 @@ const run_method = core.getInput('run_method', {required: true} );
 parameters['run_method'] = run_method
 */
 
+const veracode_policy_name = core.getInput('veracode_policy_name', {required: false});
+parameters['veracode_policy_name'] = veracode_policy_name
+
 const request_policy = core.getInput('request_policy', {required: false} );
 parameters['request_policy'] = request_policy
 

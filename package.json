@@ -12,9 +12,12 @@
     "@actions/artifact": "^1.1.1",
     "@actions/core": "^1.10.0",
     "@actions/github": "^5.1.1",
+    "axios": "^1.6.0",
+    "sjcl": "^1.0.8",
     "typescript": "^4.7.4"
   },
   "devDependencies": {
-    "@types/node": "^18.0.0"
+    "@types/node": "^18.0.0",
+    "@types/sjcl": "^1.0.32"
   }
 }

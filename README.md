@@ -37,18 +37,18 @@ The tool will need some information passed to it as parameters (many are optiona
     * The build artifact file to upload and scan
 
 * Very Common
+  * veracode_policy_name
+    * Name of the Veracode default policy or custom-built policy to apply to the scan results.
   * request_policy
-    * The name of the custom platform policy that will be downloaded. A scan will not happen. This can not be a Veracode builtin policy. The name of the policy file is by convention the name of the policy with spaces replaced by underscores and .json appended.
+    * DPERECATED, WILL BE REMOVED WITH NEXT VERSION - The name of the custom platform policy that will be downloaded. A scan will not happen. This can not be a Veracode builtin policy. The name of the policy file is by convention the name of the policy with spaces replaced by underscores and .json appended.
   * fail_on_severity
     * Only fail if flaws of Very High or High severity are found.
   * fail_on_cwe
     * Also fail if a CWE-80: (XSS) flaw is found. (It is Medium severity and thus would be filtered out by the above option)
   * baseline_file:
     * Filter the flaws that exist in the specified baseline file and show only the additional flaws in the current scan.
-  * request_policy
-    * Specify the name of a Policy on the Veracode platform that will be downlaoded and use to rate pipeline scan findings on
   * policy_name
-    * Name of the Veracode default policy rule to apply to the scan results. You can only use this parameter with a Veracode default policy.
+    * DPERECATED, WILL BE REMOVED WITH NEXT VERSION - Name of the Veracode default policy rule to apply to the scan results. You can only use this parameter with a Veracode default policy.
   * policy_file:
     * a previously downloaded policy file that should used to rate the findings
   * fail_build:
