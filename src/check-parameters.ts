@@ -36,7 +36,7 @@ export async function checkParameters (parameters:any):Promise<string>  {
 
         
         const uriPath = '/appsec/v1/policies'
-        const queryparams = '?name='+encodeURI(parameters.veracode_policy_name)
+        const queryparams = '?name='+encodeURIComponent(parameters.veracode_policy_name)
         const path = uriPath+queryparams
         const appUrl = apiUrl+uriPath+queryparams
         //const headers = {'Authorization':auth.generateHeader(appUrl, 'GET', apiUrl, cleanedID, cleanedKEY)}
