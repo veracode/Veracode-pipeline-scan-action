@@ -18596,13 +18596,13 @@ function checkParameters(parameters) {
             core.info('Veracode Policy evaluation is required');
             core.info('Check the region to select the correct platform');
             if (parameters.vid.startsWith('vera01ei-')) {
-                var apiUrl = 'https://api.veracode.eu';
+                var apiUrl = 'api.veracode.eu';
                 var cleanedID = (_b = (_a = parameters.vid) === null || _a === void 0 ? void 0 : _a.replace('vera01ei-', '')) !== null && _b !== void 0 ? _b : '';
                 var cleanedKEY = (_d = (_c = parameters.vkey) === null || _c === void 0 ? void 0 : _c.replace('vera01es-', '')) !== null && _d !== void 0 ? _d : '';
                 core.info('Region: EU');
             }
             else {
-                var apiUrl = 'https://api.veracode.com';
+                var apiUrl = 'api.veracode.com';
                 var cleanedID = parameters.vid;
                 var cleanedKEY = parameters.vkey;
                 core.info('Region: US');
@@ -18619,7 +18619,7 @@ function checkParameters(parameters) {
                     headers: {
                         'Authorization': auth.generateHeader(path, 'GET', apiUrl, cleanedID, cleanedKEY),
                     },
-                    url: apiUrl + uriPath + queryparams
+                    url: 'https://' + apiUrl + uriPath + queryparams
                 });
                 if (parameters.debug == 1) {
                     core.info('---- DEBUG OUTPUT START ----');

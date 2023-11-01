@@ -21,13 +21,13 @@ export async function checkParameters (parameters:any):Promise<string>  {
         core.info('Veracode Policy evaluation is required')
         core.info('Check the region to select the correct platform')
         if ( parameters.vid.startsWith('vera01ei-') ){
-            var apiUrl = 'https://api.veracode.eu'
+            var apiUrl = 'api.veracode.eu'
             var cleanedID = parameters.vid?.replace('vera01ei-','') ?? '';
             var cleanedKEY = parameters.vkey?.replace('vera01es-','') ?? '';
             core.info('Region: EU')
         }
         else {
-            var apiUrl = 'https://api.veracode.com'
+            var apiUrl = 'api.veracode.com'
             var cleanedID = parameters.vid
             var cleanedKEY = parameters.vkey
             core.info('Region: US')
@@ -47,7 +47,7 @@ export async function checkParameters (parameters:any):Promise<string>  {
                 headers: {
                     'Authorization': auth.generateHeader(path, 'GET', apiUrl, cleanedID, cleanedKEY),
                 },
-                url: apiUrl+uriPath+queryparams
+                url: 'https://'+apiUrl+uriPath+queryparams
             });
             if (parameters.debug == 1 ){
                 core.info('---- DEBUG OUTPUT START ----')
