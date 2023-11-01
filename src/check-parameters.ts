@@ -76,7 +76,7 @@ export async function checkParameters (parameters:any):Promise<string>  {
                     core.info('Downloading custom policy file and setting pilicy to '+parameters.veracode_policy_name)
 
 
-                    policyCommand = 'java -jar pipeline-scan.jar -vid '+parameters.vid+' -vkey '+parameters.vkey+' --request_policy "'+parameters.request_policy+'"'
+                    policyCommand = 'java -jar pipeline-scan.jar -vid '+parameters.vid+' -vkey '+parameters.vkey+' --request_policy "'+parameters.veracode_policy_name+'"'
                     const policyDownloadOutput = await getPolicyFile(policyCommand,parameters)
 
                     if (parameters.debug == 1 ){
@@ -109,7 +109,7 @@ export async function checkParameters (parameters:any):Promise<string>  {
     }
     
 
-    //this will go away in thex version of the action, function is deprecated
+    //this will go away in thex version of the action, function is deprecated - start
     if ( parameters.request_policy != ""){
         core.info('Policy file download required')
         policyCommand = 'java -jar pipeline-scan.jar -vid '+parameters.vid+' -vkey '+parameters.vkey+' --request_policy "'+parameters.request_policy+'"'
@@ -128,6 +128,7 @@ export async function checkParameters (parameters:any):Promise<string>  {
         core.info('Policy Filen Name: '+policyFileName)
         scanCommand += " --policy_file "+policyFileName+".json"
     }
+    //this will go away in thex version of the action, function is deprecated - end
         
     core.info('create pipeline-scan scan command')
     Object.entries(parameters).forEach(([key, value], index) => {

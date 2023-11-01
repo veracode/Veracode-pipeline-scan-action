@@ -18643,7 +18643,7 @@ function checkParameters(parameters) {
                     else if (response.data._embedded.policy_versions[0].type == 'CUSTOMER') {
                         core.info('Custom Policy is required');
                         core.info('Downloading custom policy file and setting pilicy to ' + parameters.veracode_policy_name);
-                        policyCommand = 'java -jar pipeline-scan.jar -vid ' + parameters.vid + ' -vkey ' + parameters.vkey + ' --request_policy "' + parameters.request_policy + '"';
+                        policyCommand = 'java -jar pipeline-scan.jar -vid ' + parameters.vid + ' -vkey ' + parameters.vkey + ' --request_policy "' + parameters.veracode_policy_name + '"';
                         const policyDownloadOutput = yield (0, pipeline_scan_1.getPolicyFile)(policyCommand, parameters);
                         if (parameters.debug == 1) {
                             core.info('---- DEBUG OUTPUT START ----');
@@ -18667,7 +18667,7 @@ function checkParameters(parameters) {
                 console.error(err.response);
             }
         }
-        //this will go away in thex version of the action, function is deprecated
+        //this will go away in thex version of the action, function is deprecated - start
         if (parameters.request_policy != "") {
             core.info('Policy file download required');
             policyCommand = 'java -jar pipeline-scan.jar -vid ' + parameters.vid + ' -vkey ' + parameters.vkey + ' --request_policy "' + parameters.request_policy + '"';
@@ -18683,6 +18683,7 @@ function checkParameters(parameters) {
             core.info('Policy Filen Name: ' + policyFileName);
             scanCommand += " --policy_file " + policyFileName + ".json";
         }
+        //this will go away in thex version of the action, function is deprecated - end
         core.info('create pipeline-scan scan command');
         Object.entries(parameters).forEach(([key, value], index) => {
             if (key != 'vid' && key != 'vkey' && key != 'run_method' && key != 'request_policy' && key != 'veracode_policy_name' && value != "") {
