@@ -29,7 +29,7 @@ export async function checkParameters (parameters:any):Promise<string>  {
         }
         core.info('Check whether a built-in or a custom policy is required')
 
-        const uriPath = '/appsec/v1/policies?name=VeraDemo%20Policy'
+        const uriPath = '/appsec/v1/policies'
         const queryparams = '?name='+parameters.veracode_policy_name
         const appUrl = apiUrl+uriPath+queryparams
         const headers = {'Authorization':calculateAuthorizationHeader(parameters.vid, parameters.vkey, apiUrl, uriPath, queryparams, 'GET')}
