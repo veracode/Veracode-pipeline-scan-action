@@ -76,7 +76,7 @@ export async function checkParameters (parameters:any):Promise<string>  {
                 }
                 else if ( response.data._embedded.policy_versions[0].type == 'CUSTOMER' ){
                     core.info('Custom Policy is required')
-                    core.info('Downloading custom policy file and setting pilicy to '+parameters.veracode_policy_name)
+                    core.info('Downloading custom policy file and setting policy to '+parameters.veracode_policy_name)
 
 
                     policyCommand = 'java -jar pipeline-scan.jar -vid '+parameters.vid+' -vkey '+parameters.vkey+' --request_policy "'+parameters.veracode_policy_name+'"'
