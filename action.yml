@@ -83,7 +83,7 @@ inputs:
     description: 'Enable debug mode. 1 for on'
     required: false
   store_baseline_file:
-    description: 'Enable the storage of a baseline file. Takes true or fales'
+    description: 'Enable the storage of a baseline file. Takes true or false'
     required: false
   store_baseline_file_branch:
     description: 'Enter the branch name where the baseline file should be stored'
