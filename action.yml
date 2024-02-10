@@ -99,5 +99,5 @@ inputs:
     required: false
   
 runs:
-  using: 'node16'
+  using: 'node2ß'
   main: 'dist/index.js'
