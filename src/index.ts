@@ -1,6 +1,5 @@
 import { readFileSync, existsSync} from 'fs';
 import * as core from '@actions/core'
-import {create, UploadOptions} from '@actions/artifact'
 import { downloadJar } from "./pipeline-scan";
 import { runScan } from "./pipeline-scan";
 import { checkParameters } from './check-parameters';
@@ -138,10 +137,16 @@ async function run (parameters:any){
 
     core.info('Pipeline Scan Output')
     core.info(scanCommandOutput)
+    const use_upgraded_version = core.getInput('use_upgraded_version', {required: false});
+    parameters['use_upgraded_version'] = use_upgraded_version;
 
     //store output files as artifacts
     const artifact = require('@actions/artifact');
-    const artifactClient = artifact.create()
+    let artifactClient = artifact.create()
+    if(parameters['use_upgraded_version'] == 'true') {
+        const {DefaultArtifactClient} = require('@actions/artifact-v2')
+        artifactClient = new DefaultArtifactClient()
+    }
     const artifactName = 'Veracode Pipeline-Scan Results';
     const files = [
         'results.json',
