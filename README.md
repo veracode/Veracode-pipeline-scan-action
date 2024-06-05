@@ -237,5 +237,5 @@ ncc build ./src/index.ts
 ```
 
 > [!WARNING]
-> actions/upload-artifact@v3 and actions/upload-artifact@v3 is scheduled for deprecation on **November 30, 2024**. [Learn more.](https://github.blog/changelog/2024-04-16-deprecation-notice-v3-of-the-artifact-actions/)
+> actions/upload-artifact@v3 and actions/download-artifact@v3 is scheduled for deprecation on **November 30, 2024**. [Learn more.](https://github.blog/changelog/2024-04-16-deprecation-notice-v3-of-the-artifact-actions/)
 > We've upgraded the version of @actions/artifact to 2.1.4, which now supports actions/upload-artifact@v4 and actions/download-artifact@v4. Please ensure compatibility by utilizing the v4 versions of actions/upload-artifact and actions/download-artifact.
