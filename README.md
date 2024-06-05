@@ -111,11 +111,11 @@ The basic yml
 
       steps:
         - name: checkout repo
-          uses: actions/checkout@v3
+          uses: actions/checkout@v4
         
         # get the compiled binary from a previous job
         - name: get archive
-          uses: actions/download-artifact@v3
+          uses: actions/download-artifact@v4
           with:
             name: verademo.war
 
@@ -141,11 +141,11 @@ Rate the findings according to a policy and fail the build
 
       steps:
         - name: checkout repo
-          uses: actions/checkout@v3
+          uses: actions/checkout@v4
         
         # get the compiled binary from a previous job
         - name: get archive
-          uses: actions/download-artifact@v3
+          uses: actions/download-artifact@v4
           with:
             name: verademo.war
 
@@ -173,11 +173,11 @@ Sort out previous findings using a baseline file
 
       steps:
         - name: checkout repo
-          uses: actions/checkout@v3
+          uses: actions/checkout@v4
         
         # get the compiled binary from a previous job
         - name: get archive
-          uses: actions/download-artifact@v3
+          uses: actions/download-artifact@v4
           with:
             name: verademo.war
 
@@ -206,11 +206,11 @@ Sort out previous findings using a baseline file, create a new baseline file and
 
       steps:
         - name: checkout repo
-          uses: actions/checkout@v3
+          uses: actions/checkout@v4
         
         # get the compiled binary from a previous job
         - name: get archive
-          uses: actions/download-artifact@v3
+          uses: actions/download-artifact@v4
           with:
             name: verademo.war
 
