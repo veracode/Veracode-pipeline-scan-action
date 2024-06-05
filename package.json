@@ -17,7 +17,7 @@
     "typescript": "^4.7.4"
   },
   "devDependencies": {
-    "@types/node": "^18.0.0",
+    "@types/node": "^18.19.34",
     "@types/sjcl": "^1.0.32"
   }
 }
