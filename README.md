@@ -1,3 +1,7 @@
+> [!WARNING]
+> actions/upload-artifact@v3 and actions/download-artifact@v3 is scheduled for deprecation on **November 30, 2024**. [Learn more.](https://github.blog/changelog/2024-04-16-deprecation-notice-v3-of-the-artifact-actions/)
+> We've upgraded the version of @actions/artifact to 2.1.4, which now supports actions/upload-artifact@v4 and actions/download-artifact@v4. Please ensure compatibility by utilizing the v4 versions of actions/upload-artifact and actions/download-artifact.
+
 # Veracode Pipeline Scan Action
 
 Veracode Pipeline Scan Action runs the Veracode pipeline-scan as an action on any GitHub pipeline
@@ -111,11 +115,11 @@ The basic yml
 
       steps:
         - name: checkout repo
-          uses: actions/checkout@v3
+          uses: actions/checkout@v4
         
         # get the compiled binary from a previous job
         - name: get archive
-          uses: actions/download-artifact@v3
+          uses: actions/download-artifact@v4
           with:
             name: verademo.war
 
@@ -141,11 +145,11 @@ Rate the findings according to a policy and fail the build
 
       steps:
         - name: checkout repo
-          uses: actions/checkout@v3
+          uses: actions/checkout@v4
         
         # get the compiled binary from a previous job
         - name: get archive
-          uses: actions/download-artifact@v3
+          uses: actions/download-artifact@v4
           with:
             name: verademo.war
 
@@ -173,11 +177,11 @@ Sort out previous findings using a baseline file
 
       steps:
         - name: checkout repo
-          uses: actions/checkout@v3
+          uses: actions/checkout@v4
         
         # get the compiled binary from a previous job
         - name: get archive
-          uses: actions/download-artifact@v3
+          uses: actions/download-artifact@v4
           with:
             name: verademo.war
 
@@ -206,11 +210,11 @@ Sort out previous findings using a baseline file, create a new baseline file and
 
       steps:
         - name: checkout repo
-          uses: actions/checkout@v3
+          uses: actions/checkout@v4
         
         # get the compiled binary from a previous job
         - name: get archive
-          uses: actions/download-artifact@v3
+          uses: actions/download-artifact@v4
           with:
             name: verademo.war
 
