@@ -2,6 +2,7 @@ import * as core from '@actions/core'
 import { runScan, getPolicyFile } from './pipeline-scan'
 import axios from 'axios'
 import * as auth from './auth'
+import { env } from 'process'
 //import { calculateAuthorizationHeader } from './veracode-hmac'
 
 export async function checkParameters (parameters:any):Promise<string>  {
@@ -52,12 +53,24 @@ export async function checkParameters (parameters:any):Promise<string>  {
 
 
 //        try {
+
+            const proxy = env.http_proxy
+            const proxyProtocol:any = proxy?.split('://')[0]
+            const proxyUrl:any = proxy?.split('://')[1]
+            const proxyHost:any = proxyUrl?.split(':')[0]
+            const proxyPort:any = proxyUrl?.split(':')[1]
             const response = await axios.request({
                 method: 'GET',
                 headers: {
                     'Authorization': auth.generateHeader(path, 'GET', apiUrl, cleanedID, cleanedKEY),
                 },
-                url: 'https://'+apiUrl+uriPath+queryparams
+                url: 'https://'+apiUrl+uriPath+queryparams,
+                proxy: {
+                    protocol: proxyProtocol,
+                    host: proxyUrl,
+                    port: proxyPort,
+   
+                  }
             });
             if (parameters.debug == 1 ){
                 core.info('---- DEBUG OUTPUT START ----')
