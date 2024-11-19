@@ -44,9 +44,10 @@ export function runScan (scanCommand:any,parameters:any){
 
     let commandOutput = ''
     try {
-        execSync(scanCommand)
+        commandOutput = execSync(scanCommand).toString()
     } catch (ex:any){
-        commandOutput = ex.stdout.toString()
+        core.info("Pipeline-scan command failed.\n"+ex.stdout.toString())
+        //commandOutput = ex.stdout.toString()
     }
     return commandOutput
 }
