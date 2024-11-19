@@ -142,7 +142,7 @@ async function run (parameters:any){
     if ( !existsSync('results.json') ){
         core.info('results.json does not exist - creating empty file')
         let emptyResults = {
-            "results": []
+            "findings": []
         }
         let emptyResultsString = JSON.stringify(emptyResults)
         let emptyResultsFile = 'results.json'
@@ -158,7 +158,7 @@ async function run (parameters:any){
     if ( !existsSync('filtered_results.json') ){
         core.info('filtered_results.json does not exist - creating empty file')
         let emptyResults = {
-            "results": []
+            "findings": []
         }
         let emptyResultsString = JSON.stringify(emptyResults)
         let emptyResultsFilteredFile = 'filtered_results.json'
