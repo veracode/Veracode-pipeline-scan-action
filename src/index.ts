@@ -1,4 +1,4 @@
-import { readFileSync, existsSync} from 'fs';
+import { readFileSync, existsSync, fstat, writeFileSync} from 'fs';
 import * as core from '@actions/core'
 import { downloadJar } from "./pipeline-scan";
 import { runScan } from "./pipeline-scan";
@@ -137,6 +137,38 @@ async function run (parameters:any){
 
     core.info('Pipeline Scan Output')
     core.info(scanCommandOutput)
+
+    //check if the results files exist and if not create empty files
+    if ( !existsSync('results.json') ){
+        core.info('results.json does not exist - creating empty file')
+        let emptyResults = {
+            "results": []
+        }
+        let emptyResultsString = JSON.stringify(emptyResults)
+        let emptyResultsFile = 'results.json'
+        let emptyResultsFilteredFile = 'filtered_results.json'
+
+        try {
+            writeFileSync(emptyResultsFile,emptyResultsString)
+        } catch (error) {
+            core.info('Error creating empty results files')
+        }
+    }
+
+    if ( !existsSync('filtered_results.json') ){
+        core.info('filtered_results.json does not exist - creating empty file')
+        let emptyResults = {
+            "results": []
+        }
+        let emptyResultsString = JSON.stringify(emptyResults)
+        let emptyResultsFilteredFile = 'filtered_results.json'
+
+        try {
+            writeFileSync(emptyResultsFilteredFile,emptyResultsString)
+        } catch (error) {
+            core.info('Error creating empty results files')
+        }
+    }
     
     //store output files as artifacts
     const { DefaultArtifactClient } = require('@actions/artifact')

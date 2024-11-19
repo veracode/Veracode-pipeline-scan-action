@@ -47,7 +47,7 @@ export function runScan (scanCommand:any,parameters:any){
         commandOutput = execSync(scanCommand).toString()
     } catch (ex:any){
         core.info("Pipeline-scan command failed.\n"+ex.stdout.toString())
-        //commandOutput = ex.stdout.toString()
+        commandOutput = ex.stdout.toString()
     }
     return commandOutput
 }
