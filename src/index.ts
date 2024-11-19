@@ -152,7 +152,14 @@ async function run (parameters:any){
         continueOnError: true
     }
 
-    const uploadResult = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options)
+    try {
+        const uploadResult = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options)
+        core.info('Artifact upload result:')
+        core.info(uploadResult)
+    } catch (error) {
+        core.info('Artifact upload failed:')
+        //core.error(error)
+    }
 
 
     if ( parameters.store_baseline_file == 'true'){
