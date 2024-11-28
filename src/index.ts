@@ -115,6 +115,10 @@ const fail_build = core.getInput('fail_build', {required: false} );
 parameters['fail_build'] = fail_build
 //true or false 
 
+const artifact_name = core.getInput('artifact_name', {required: false} );
+parameters['artifact_name'] = artifact_name
+//string 
+
 
 
 
@@ -187,7 +191,7 @@ async function run (parameters:any){
         //store output files as artifacts
         const { DefaultArtifactClient } = require('@actions/artifact')
         const artifactClient = new DefaultArtifactClient()
-        const artifactName = 'Veracode Pipeline-Scan Results';
+        const artifactName = 'Veracode Pipeline-Scan Results - '+parameters.artifact_name;
         const files = [
             parameters.json_output_file,
             parameters.filtered_json_output_file,
