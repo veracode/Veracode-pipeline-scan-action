@@ -157,21 +157,6 @@ async function run (parameters:any){
         }
     }
 
-    if ( !existsSync('filtered_results.json') ){
-        core.info('filtered_results.json does not exist - creating empty file')
-        let emptyResults = {
-            "findings": []
-        }
-        let emptyResultsString = JSON.stringify(emptyResults)
-        let emptyResultsFilteredFile = 'filtered_results.json'
-
-        try {
-            writeFileSync(emptyResultsFilteredFile,emptyResultsString)
-        } catch (error) {
-            core.info('Error creating empty results files')
-        }
-    }
-
     const rootDirectory = process.cwd()
     if (parameters.debug == 1 ){
         core.info('---- DEBUG OUTPUT START ----')
@@ -224,6 +209,41 @@ async function run (parameters:any){
     }
     else {
         core.info('Results files do not exist - no artifact to store')
+
+        core.info(parameters.filtered_json_output_file+' does not exist - creating empty file')
+        let emptyResults = {
+            "findings": []
+        }
+        let emptyResultsString = JSON.stringify(emptyResults)
+        let emptyResultsFilteredFile = parameters.filtered_json_output_file
+
+        try {
+            writeFileSync(emptyResultsFilteredFile,emptyResultsString)
+        } catch (error) {
+            core.info('Error creating empty results files')
+        }
+
+        const { DefaultArtifactClient } = require('@actions/artifact')
+        const artifactClient = new DefaultArtifactClient()
+        const artifactName = 'Veracode Pipeline-Scan Results - '+parameters.artifact_name;
+        const files = [
+            parameters.filtered_json_output_file
+        ]
+
+
+        const rootDirectory = process.cwd()
+        const options = {
+            continueOnError: true
+        }
+
+        try {
+            const uploadResult = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options)
+            core.info('Artifact upload result:')
+            core.info(uploadResult)
+        } catch (error) {
+            core.info('Artifact upload failed:')
+            core.info(String(error))
+        }
     }
 
 
