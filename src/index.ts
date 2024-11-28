@@ -76,13 +76,11 @@ parameters['json_output'] = json_output
 const include = core.getInput('include', {required: false} );
 parameters['include'] = include
 
-/*
 const json_output_file = core.getInput('json_output_file', {required: false} );
 parameters['json_output_file'] = json_output_file
 
 const filtered_json_output_file = core.getInput('filtered_json_output_file', {required: false} );
 parameters['filtered_json_output_file'] = filtered_json_output_file
-*/
 
 const project_name = core.getInput('project_name', {required: false} );
 parameters['project_name'] = project_name
