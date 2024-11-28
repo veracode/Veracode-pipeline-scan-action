@@ -173,9 +173,9 @@ async function run (parameters:any){
     const artifactClient = new DefaultArtifactClient()
     const artifactName = 'Veracode Pipeline-Scan Results';
     const files = [
-        json_output_file,
-        filtered_json_output_file,
-        summary_output_file
+        parameters[json_output_file],
+        parameters[filtered_json_output_file],
+        parameters[summary_output_file]
     ]
 
     const rootDirectory = process.cwd()
