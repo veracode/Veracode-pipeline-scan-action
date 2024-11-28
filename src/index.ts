@@ -206,7 +206,7 @@ async function run (parameters:any){
             core.info(uploadResult)
         } catch (error) {
             core.info('Artifact upload failed:')
-            //core.error(error)
+            core.info(String(error))
         }
 
 
