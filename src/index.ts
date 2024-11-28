@@ -167,29 +167,49 @@ async function run (parameters:any){
             core.info('Error creating empty results files')
         }
     }
+
+
+    //check if results files exists and if so store them as artifacts
+    if ( existsSync(parameters[json_output_file] && parameters[filtered_json_output_file] && parameters[summary_output_file]) ){
+        core.info('Results files exist - storing as artifact')
     
-    //store output files as artifacts
-    const { DefaultArtifactClient } = require('@actions/artifact')
-    const artifactClient = new DefaultArtifactClient()
-    const artifactName = 'Veracode Pipeline-Scan Results';
-    const files = [
-        parameters[json_output_file],
-        parameters[filtered_json_output_file],
-        parameters[summary_output_file]
-    ]
+        
+        //store output files as artifacts
+        const { DefaultArtifactClient } = require('@actions/artifact')
+        const artifactClient = new DefaultArtifactClient()
+        const artifactName = 'Veracode Pipeline-Scan Results';
+        const files = [
+            parameters[json_output_file],
+            parameters[filtered_json_output_file],
+            parameters[summary_output_file]
+        ]
 
-    const rootDirectory = process.cwd()
-    const options = {
-        continueOnError: true
+
+        const rootDirectory = process.cwd()
+        const options = {
+            continueOnError: true
+        }
+
+        try {
+            const uploadResult = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options)
+            core.info('Artifact upload result:')
+            core.info(uploadResult)
+        } catch (error) {
+            core.info('Artifact upload failed:')
+            //core.error(error)
+        }
+
+
+        if (parameters.debug == 1 ){
+            core.info('---- DEBUG OUTPUT START ----')
+            core.info('---- index.ts / run() create artifacts ----')
+            core.info('---- Artifact filenames: '+files)
+            core.info('---- DEBUG OUTPUT END ----')
+        }
+
     }
-
-    try {
-        const uploadResult = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options)
-        core.info('Artifact upload result:')
-        core.info(uploadResult)
-    } catch (error) {
-        core.info('Artifact upload failed:')
-        //core.error(error)
+    else {
+        core.info('Results files do not exist - no artifact to store')
     }
 
 
