@@ -14,7 +14,7 @@ export async function checkParameters (parameters:any):Promise<string>  {
         core.info('---- DEBUG OUTPUT END ----')
     }
 
-    let scanCommand:string = 'java -jar pipeline-scan.jar -vid '+parameters.vid+' -vkey '+parameters.vkey+' -jf results.json -fjf filtered_results.json'
+    let scanCommand:string = 'java -jar pipeline-scan.jar -vid '+parameters.vid+' -vkey '+parameters.vkey
     let policyCommand:string = ""
 
     if ( parameters.veracode_policy_name !="" ){
