@@ -169,6 +169,15 @@ async function run (parameters:any){
     }
 
     const rootDirectory = process.cwd()
+    if (parameters.debug == 1 ){
+        core.info('---- DEBUG OUTPUT START ----')
+        core.info('---- index.ts / run() before create artifacts ----')
+        core.info('---- Roof folder: '+rootDirectory)
+        core.info('---- Results Json File: '+rootDirectory+'/'+parameters[json_output_file])
+        core.info('---- Filtered Results Json File: '+rootDirectory+'/'+parameters[filtered_json_output_file])
+        core.info('---- Summary Output File: '+rootDirectory+'/'+parameters[summary_output_file])
+        core.info('---- DEBUG OUTPUT END ----')
+    }
 
     //check if results files exists and if so store them as artifacts
     if ( existsSync(rootDirectory+'/'+parameters[json_output_file] && rootDirectory+'/'+parameters[filtered_json_output_file] && rootDirectory+'/'+parameters[summary_output_file]) ){
