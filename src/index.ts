@@ -296,7 +296,9 @@ async function run (parameters:any){
 
     if ( parameters.fail_build == "true" ){
         core.info('Check if we need to fail the build')
-        let failBuild = scanCommandOutput.indexOf("FAILURE")
+        const failureRegex = /FAILURE: Found \d+ issues!/
+        let failBuild = failureRegex.test(scanCommandOutput)
+
 
         if (parameters.debug == 1 ){
             core.info('---- DEBUG OUTPUT START ----')
@@ -306,7 +308,7 @@ async function run (parameters:any){
         }
 
 
-        if ( failBuild >= 1 ){
+        if ( failBuild ){
             core.info('There are flaws found that require the build to fail')
             core.setFailed(scanCommandOutput)
         }
