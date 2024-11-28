@@ -168,9 +168,10 @@ async function run (parameters:any){
         }
     }
 
+    const rootDirectory = process.cwd()
 
     //check if results files exists and if so store them as artifacts
-    if ( existsSync(parameters[json_output_file] && parameters[filtered_json_output_file] && parameters[summary_output_file]) ){
+    if ( existsSync(rootDirectory+'/'+parameters[json_output_file] && rootDirectory+'/'+parameters[filtered_json_output_file] && rootDirectory+'/'+parameters[summary_output_file]) ){
         core.info('Results files exist - storing as artifact')
     
         
