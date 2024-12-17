@@ -14,7 +14,7 @@ export async function checkParameters (parameters:any):Promise<string>  {
         core.info('---- DEBUG OUTPUT END ----')
     }
 
-    let scanCommand:string = 'java -jar pipeline-scan.jar -vid '+parameters.vid+' -vkey '+parameters.vkey+' -jf results.json -fjf filtered_results.json'
+    let scanCommand:string = 'java -jar pipeline-scan.jar -vid '+parameters.vid+' -vkey '+parameters.vkey
     let policyCommand:string = ""
 
     if ( parameters.veracode_policy_name !="" ){
@@ -140,7 +140,7 @@ export async function checkParameters (parameters:any):Promise<string>  {
         
     core.info('create pipeline-scan scan command')
     Object.entries(parameters).forEach(([key, value], index) => {
-        if ( key != 'vid' && key != 'vkey' && key != 'run_method' && key != 'request_policy' && key != 'veracode_policy_name' && value != "") {
+        if ( key != 'vid' && key != 'vkey' && key != 'run_method' && key != 'request_policy' && key != 'veracode_policy_name' && key != 'artifact_name' && value != "") {
                 
             if (parameters.debug == 1 ){
                 core.info('---- DEBUG OUTPUT START ----')
