@@ -149,7 +149,7 @@ export async function checkParameters (parameters:any):Promise<string>  {
                  core.info('---- DEBUG OUTPUT END ----')
             }
             if ( key != "debug" && key != "store_baseline_file" && key != "store_baseline_file_branch" && key != "create_baseline_from" && key != "fail_build" ) {
-                if ( key == "include" ){
+                if ( key == "include" || key == "fail_on_severity" || key == "fail_on_cwe" ){
                     scanCommand += " --"+key+" '"+value+"'"
                 }
                 else {
