@@ -12,7 +12,7 @@
     "@actions/artifact": "^2.1.4",
     "@actions/core": "^1.10.0",
     "@actions/github": "^5.1.1",
-    "axios": "^1.7.2",
+    "axios": "^1.7.9",
     "sjcl": "^1.0.8",
     "typescript": "^4.7.4"
   },
