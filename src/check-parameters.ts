@@ -91,7 +91,7 @@ export async function checkParameters (parameters:any):Promise<string>  {
                     }
 
                     var policyFileName = parameters.veracode_policy_name.replace(/ /gi, "_")
-                    core.info('Policy Filen Name: '+policyFileName)
+                    core.info('Policy File Name: '+policyFileName)
                     scanCommand += " --policy_file "+policyFileName+".json"
                 }
             }
@@ -133,7 +133,7 @@ export async function checkParameters (parameters:any):Promise<string>  {
 
             
         var policyFileName = parameters.request_policy.replace(/ /gi, "_")
-        core.info('Policy Filen Name: '+policyFileName)
+        core.info('Policy File Name: '+policyFileName)
         scanCommand += " --policy_file "+policyFileName+".json"
     }
     //this will go away in thex version of the action, function is deprecated - end
