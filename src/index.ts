@@ -141,6 +141,14 @@ async function run (parameters:any){
     parameters['use_upgraded_version'] = use_upgraded_version;
 
     //store output files as artifacts
+    const { DefaultArtifactClient } = require('@actions/artifact')
+    const artifactClient = new DefaultArtifactClient()
+    const artifactName = 'Veracode Pipeline-Scan Results';
+    const files = [
+        'results.json',
+        'filtered_results.json'
+    ]
+/* Version 3 Artifact upload    
     const artifact = require('@actions/artifact');
     let artifactClient = artifact.create()
     if(parameters['use_upgraded_version'] == 'true') {
@@ -152,6 +160,7 @@ async function run (parameters:any){
         'results.json',
         'filtered_results.json'
     ]
+*/
 
     const rootDirectory = process.cwd()
     const options = {
