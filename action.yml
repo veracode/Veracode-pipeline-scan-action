@@ -105,8 +105,8 @@ inputs:
     required: false
 
 branding:
-  icon: 'award'
-  color: 'green'
+  icon: "check"   # GitHub predefined icon
+  color: "blue"   # GitHub predefined color
 runs:
   using: 'node16'
   main: 'dist/index.js'
