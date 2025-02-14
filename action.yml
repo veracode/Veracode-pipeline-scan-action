@@ -104,6 +104,10 @@ inputs:
     description: 'Enter the name of the artifact to be uploaded to Github.'
     required: false
 
+branding:
+  icon: "check"  # Optional GitHub predefined icon (or update if using a new one)
+  color: "blue"  # Change color if needed
+  logo: "https://raw.githubusercontent.com/your-repo/your-action/main/.github/images/logo.png"
 runs:
   using: 'node20'
   main: 'dist/index.js'
