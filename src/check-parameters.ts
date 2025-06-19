@@ -1,6 +1,5 @@
 import * as core from '@actions/core'
 import { runScan, getPolicyFile } from './pipeline-scan'
-import axios from 'axios'
 import * as auth from './auth'
 //import { calculateAuthorizationHeader } from './veracode-hmac'
 
@@ -52,29 +51,31 @@ export async function checkParameters (parameters:any):Promise<string>  {
 
 
 //        try {
-            const response = await axios.request({
+            const response = await fetch('https://'+apiUrl+uriPath+queryparams, {
                 method: 'GET',
                 headers: {
                     'Authorization': auth.generateHeader(path, 'GET', apiUrl, cleanedID, cleanedKEY),
-                },
-                url: 'https://'+apiUrl+uriPath+queryparams
+                }
             });
+            
+            const responseData = await response.json();
+            
             if (parameters.debug == 1 ){
                 core.info('---- DEBUG OUTPUT START ----')
                 core.info('---- check-parameters.ts / checkParameters() - find the policy via API----')
                 core.info('---- Response Data ----')
-                core.info(JSON.stringify(response.data))
+                core.info(JSON.stringify(responseData))
                 core.info('---- DEBUG OUTPUT END ----')
             }
 
-            if ( response.data.page.total_elements != '0' ){
+            if ( responseData.page.total_elements != '0' ){
 
-                if ( response.data._embedded.policy_versions[0].type == 'BUILTIN' ){
+                if ( responseData._embedded.policy_versions[0].type == 'BUILTIN' ){
                     core.info('Built-in Policy is required')
                     core.info('Setting policy to '+parameters.veracode_policy_name)
                     scanCommand += ' --policy_name "'+parameters.veracode_policy_name+'"'
                 }
-                else if ( response.data._embedded.policy_versions[0].type == 'CUSTOMER' ){
+                else if ( responseData._embedded.policy_versions[0].type == 'CUSTOMER' ){
                     core.info('Custom Policy is required')
                     core.info('Downloading custom policy file and setting policy to '+parameters.veracode_policy_name)
 
@@ -95,7 +96,7 @@ export async function checkParameters (parameters:any):Promise<string>  {
                     scanCommand += " --policy_file "+policyFileName+".json"
                 }
             }
-            else if ( response.data.page.total_elements == undefined ){
+            else if ( responseData.page.total_elements == undefined ){
                 core.info('Something went wrong with fetching the correct policy')
             }
             else {
