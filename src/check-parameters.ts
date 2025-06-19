@@ -58,6 +58,18 @@ export async function checkParameters (parameters:any):Promise<string>  {
                 }
             });
             
+            if (parameters.debug == 1 ){
+                core.info('---- DEBUG OUTPUT START ----')
+                core.info('---- check-parameters.ts / checkParameters() - fetch response details ----')
+                core.info('---- Response Status: ' + response.status)
+                core.info('---- Response Status Text: ' + response.statusText)
+                core.info('---- Response URL: ' + response.url)
+                core.info('---- Response Headers: ' + JSON.stringify(Object.fromEntries(response.headers.entries())))
+                core.info('---- Response OK: ' + response.ok)
+                core.info('---- Response Type: ' + response.type)
+                core.info('---- DEBUG OUTPUT END ----')
+            }
+            
             const responseData = await response.json();
             
             if (parameters.debug == 1 ){
