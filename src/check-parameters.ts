@@ -55,7 +55,9 @@ export async function checkParameters (parameters:any):Promise<string>  {
                 method: 'GET',
                 headers: {
                     'Authorization': auth.generateHeader(path, 'GET', apiUrl, cleanedID, cleanedKEY),
-                }
+                },
+                // @ts-ignore - autoSelectFamily is a Node.js specific option
+                autoSelectFamily: true
             });
             
             if (parameters.debug == 1 ){
