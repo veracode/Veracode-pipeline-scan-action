@@ -30,8 +30,6 @@ export async function checkParameters (parameters:any):Promise<string>  {
                 core.info('---- Proxy Host: ' + proxyHost)
                 core.info('---- Proxy Port: ' + proxyPort)
                 core.info('---- Proxy User: ' + (proxyUser || 'Not set'))
-                core.info('---- Proxy Pass: ' + (proxyPass ? 'Set' : 'Not set'))
-                core.info('---- Proxy Args: ' + proxyArgs)
                 core.info('---- DEBUG OUTPUT END ----')
             }
             
