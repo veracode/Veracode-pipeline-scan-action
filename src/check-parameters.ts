@@ -5,6 +5,41 @@ import * as auth from './auth'
 
 export async function checkParameters (parameters:any):Promise<string>  {
 
+    // Helper function to build Java command with proxy settings
+    function buildJavaCommand(baseCommand: string): string {
+        const proxyHost = process.env.PROXY_HOST;
+        const proxyPort = process.env.PROXY_PORT;
+        const proxyUser = process.env.PROXY_USER;
+        const proxyPass = process.env.PROXY_PASS;
+        
+        if (proxyHost && proxyPort) {
+            let proxyArgs = ` -Dhttp.proxyHost=${proxyHost} -Dhttp.proxyPort=${proxyPort}`;
+            
+            // Add HTTPS proxy settings (same as HTTP for most cases)
+            proxyArgs += ` -Dhttps.proxyHost=${proxyHost} -Dhttps.proxyPort=${proxyPort}`;
+            
+            // Add authentication if provided
+            if (proxyUser && proxyPass) {
+                proxyArgs += ` -Dhttp.proxyUser=${proxyUser} -Dhttp.proxyPassword=${proxyPass}`;
+                proxyArgs += ` -Dhttps.proxyUser=${proxyUser} -Dhttps.proxyPassword=${proxyPass}`;
+            }
+            
+            if (parameters.debug == 1) {
+                core.info('---- DEBUG OUTPUT START ----')
+                core.info('---- check-parameters.ts / buildJavaCommand() - proxy settings ----')
+                core.info('---- Proxy Host: ' + proxyHost)
+                core.info('---- Proxy Port: ' + proxyPort)
+                core.info('---- Proxy User: ' + (proxyUser || 'Not set'))
+                core.info('---- Proxy Pass: ' + (proxyPass ? 'Set' : 'Not set'))
+                core.info('---- Proxy Args: ' + proxyArgs)
+                core.info('---- DEBUG OUTPUT END ----')
+            }
+            
+            return baseCommand.replace('java -jar', `java${proxyArgs} -jar`);
+        }
+        
+        return baseCommand;
+    }
 
     if (parameters.debug == 1 ){
         core.info('---- DEBUG OUTPUT START ----')
@@ -13,7 +48,7 @@ export async function checkParameters (parameters:any):Promise<string>  {
         core.info('---- DEBUG OUTPUT END ----')
     }
 
-    let scanCommand:string = 'java -jar pipeline-scan.jar -vid '+parameters.vid+' -vkey '+parameters.vkey
+    let scanCommand:string = buildJavaCommand('java -jar pipeline-scan.jar -vid '+parameters.vid+' -vkey '+parameters.vkey)
     let policyCommand:string = ""
 
     if ( parameters.veracode_policy_name !="" ){
@@ -137,7 +172,7 @@ export async function checkParameters (parameters:any):Promise<string>  {
                         core.info('Downloading custom policy file and setting policy to '+parameters.veracode_policy_name)
 
 
-                        policyCommand = 'java -jar pipeline-scan.jar -vid '+parameters.vid+' -vkey '+parameters.vkey+' --request_policy "'+parameters.veracode_policy_name+'"'
+                        policyCommand = buildJavaCommand('java -jar pipeline-scan.jar -vid '+parameters.vid+' -vkey '+parameters.vkey+' --request_policy "'+parameters.veracode_policy_name+'"')
                         const policyDownloadOutput = await getPolicyFile(policyCommand,parameters)
 
                         if (parameters.debug == 1 ){
@@ -199,7 +234,7 @@ export async function checkParameters (parameters:any):Promise<string>  {
     //this will go away in thex version of the action, function is deprecated - start
     if ( parameters.request_policy != ""){
         core.info('Policy file download required')
-        policyCommand = 'java -jar pipeline-scan.jar -vid '+parameters.vid+' -vkey '+parameters.vkey+' --request_policy "'+parameters.request_policy+'"'
+        policyCommand = buildJavaCommand('java -jar pipeline-scan.jar -vid '+parameters.vid+' -vkey '+parameters.vkey+' --request_policy "'+parameters.request_policy+'"')
         const policyDownloadOutput = await getPolicyFile(policyCommand,parameters)
 
         if (parameters.debug == 1 ){
