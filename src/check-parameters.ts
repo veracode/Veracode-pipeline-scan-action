@@ -11,6 +11,15 @@ export async function checkParameters (parameters:any):Promise<string>  {
         const proxyPort = process.env.PROXY_PORT;
         const proxyUser = process.env.PROXY_USER;
         const proxyPass = process.env.PROXY_PASS;
+
+        if (parameters.debug == 1) {
+            core.info('---- DEBUG OUTPUT START ----')
+            core.info('---- check-parameters.ts / buildJavaCommand() - proxy settings ----')
+            core.info('---- Proxy Host: ' + proxyHost)
+            core.info('---- Proxy Port: ' + proxyPort)
+            core.info('---- Proxy User: ' + (proxyUser || 'Not set'))
+            core.info('---- DEBUG OUTPUT END ----')
+        }
         
         if (proxyHost && proxyPort) {
             let proxyArgs = ` -Dhttp.proxyHost=${proxyHost} -Dhttp.proxyPort=${proxyPort}`;
