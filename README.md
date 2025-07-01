@@ -84,7 +84,15 @@ The tool will need some information passed to it as parameters (many are optiona
     * Enter the branch name where the baseline file should be stored
   * create_baseline_from:
     * From which results should the baseline file be created. standard = full results || filtered = filtered results  
-  
+
+## Using authenticated proxies
+If you are using authenticated proxies you must provide 4 environment variables
+PROXY_HOST
+PROXY_PORT
+PROXY_USER
+PROXY_PASS
+Make sure to mask at least the PROXY_PASS environment variables
+
 ### ATTENTION  
 If you store a baseline file from a pipeline scan the action will commit and push that file to a specified branch on the same repository using these commands:
 ```sh
