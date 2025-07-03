@@ -165,6 +165,14 @@ async function run (parameters:any){
         core.info('---- Results Json File: '+rootDirectory+'/'+parameters.json_output_file)
         core.info('---- Filtered Results Json File: '+rootDirectory+'/'+parameters.filtered_json_output_file)
         core.info('---- Summary Output File: '+rootDirectory+'/'+parameters.summary_output_file)
+        core.info('---- File output: ')
+        //show the file content
+        let jsonFile = readFileSync(rootDirectory+'/'+parameters.json_output_file, 'utf8')
+        let filteredJsonFile = readFileSync(rootDirectory+'/'+parameters.filtered_json_output_file, 'utf8')
+        let summaryFile = readFileSync(rootDirectory+'/'+parameters.summary_output_file, 'utf8')
+        core.info(jsonFile)
+        core.info(filteredJsonFile)
+        core.info(summaryFile)
         core.info('---- DEBUG OUTPUT END ----')
     }
 
@@ -172,6 +180,11 @@ async function run (parameters:any){
     if ( existsSync(rootDirectory+'/'+parameters.json_output_file && rootDirectory+'/'+parameters.filtered_json_output_file && rootDirectory+'/'+parameters.summary_output_file) ){
         core.info('Results files exist - storing as artifact')
     
+        //unset proxy environment variables
+        delete process.env.http_proxy
+        delete process.env.https_proxy
+        delete process.env.HTTP_PROXY
+        delete process.env.HTTPS_PROXY
         
         //store output files as artifacts
         const { DefaultArtifactClient } = require('@actions/artifact')
@@ -223,6 +236,12 @@ async function run (parameters:any){
             core.info('Error creating empty results files')
         }
 
+        //unset proxy environment variables
+        delete process.env.http_proxy
+        delete process.env.https_proxy
+        delete process.env.HTTP_PROXY
+        delete process.env.HTTPS_PROXY
+        
         const { DefaultArtifactClient } = require('@actions/artifact')
         const artifactClient = new DefaultArtifactClient()
         const artifactName = 'Veracode Pipeline-Scan Results - '+parameters.artifact_name;
