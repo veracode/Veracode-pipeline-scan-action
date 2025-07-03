@@ -177,7 +177,8 @@ async function run (parameters:any){
     }
 
     //check if results files exists and if so store them as artifacts
-    if ( existsSync(rootDirectory+'/'+parameters.json_output_file && rootDirectory+'/'+parameters.filtered_json_output_file && rootDirectory+'/'+parameters.summary_output_file) ){
+    //remove summary file from the check (&& rootDirectory+'/'+parameters.summary_output_file)
+    if ( existsSync(rootDirectory+'/'+parameters.json_output_file && rootDirectory+'/'+parameters.filtered_json_output_file ) ){
         core.info('Results files exist - storing as artifact')
     
         //unset proxy environment variables
@@ -241,7 +242,7 @@ async function run (parameters:any){
         delete process.env.https_proxy
         delete process.env.HTTP_PROXY
         delete process.env.HTTPS_PROXY
-        
+
         const { DefaultArtifactClient } = require('@actions/artifact')
         const artifactClient = new DefaultArtifactClient()
         const artifactName = 'Veracode Pipeline-Scan Results - '+parameters.artifact_name;
