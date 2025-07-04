@@ -2,6 +2,7 @@ import * as core from '@actions/core'
 import { runScan, getPolicyFile } from './pipeline-scan'
 import * as auth from './auth'
 //import { calculateAuthorizationHeader } from './veracode-hmac'
+import { HttpsProxyAgent } from 'https-proxy-agent';
 
 export async function checkParameters (parameters:any):Promise<string>  {
 
@@ -137,10 +138,25 @@ export async function checkParameters (parameters:any):Promise<string>  {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
             
+            const proxyHost = process.env.PROXY_HOST;
+            const proxyPort = process.env.PROXY_PORT;
+            const proxyUser = process.env.PROXY_USER;
+            const proxyPass = process.env.PROXY_PASS;
+
+            let agent;
+            if (proxyHost && proxyPort) {
+                let proxyUrl = `http://${proxyHost}:${proxyPort}`;
+                if (proxyUser && proxyPass) {
+                    proxyUrl = `http://${encodeURIComponent(proxyUser)}:${encodeURIComponent(proxyPass)}@${proxyHost}:${proxyPort}`;
+                }
+                agent = new HttpsProxyAgent(proxyUrl);
+            }
+            
             try {
                 const response = await fetch('https://'+apiUrl+uriPath+queryparams, {
                     ...fetchOptions,
-                    signal: controller.signal
+                    signal: controller.signal,
+                    ...(agent && { agent })
                 });
                 
                 clearTimeout(timeoutId);
