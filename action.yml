@@ -52,6 +52,7 @@ inputs:
   summary_output:
     description: 'Enter true to save the scan results as a human-readable file. Default is false.'
     required: false
+    default: true
   summary_output_file:
     description: 'Enter the filename of the scan results summary file. The file is stored in the current directory. Default is results.txt.'
     required: false

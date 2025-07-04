@@ -277,6 +277,7 @@ export async function checkParameters (parameters:any):Promise<string>  {
                 scanCommand += " --"+key+" "+value
                 }
             }
+    
 
             if (parameters.debug == 1 ){
                 core.info('---- DEBUG OUTPUT START ----')
@@ -298,4 +299,5 @@ export async function checkParameters (parameters:any):Promise<string>  {
 
     return scanCommand
 }
+
 
