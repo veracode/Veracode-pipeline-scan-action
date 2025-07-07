@@ -150,6 +150,31 @@ export async function checkParameters (parameters:any):Promise<string>  {
                     proxyUrl = `http://${encodeURIComponent(proxyUser)}:${encodeURIComponent(proxyPass)}@${proxyHost}:${proxyPort}`;
                 }
                 agent = new HttpsProxyAgent(proxyUrl);
+                
+                if (parameters.debug == 1) {
+                    core.info('---- DEBUG OUTPUT START ----')
+                    core.info('---- check-parameters.ts / checkParameters() - proxy agent configuration ----')
+                    core.info('---- Proxy Host: ' + proxyHost)
+                    core.info('---- Proxy Port: ' + proxyPort)
+                    core.info('---- Proxy User: ' + (proxyUser || 'Not set'))
+                    core.info('---- Proxy Pass: ' + (proxyPass ? 'Set' : 'Not set'))
+                    core.info('---- Proxy URL: ' + (proxyUser && proxyPass ? 'http://[USER]:[PASS]@' + proxyHost + ':' + proxyPort : proxyUrl))
+                    core.info('---- Agent Created: ' + (agent ? 'Yes' : 'No'))
+                    core.info('---- DEBUG OUTPUT END ----')
+                }
+            }
+            
+            // Debug fetch configuration before making the request
+            if (parameters.debug == 1) {
+                core.info('---- DEBUG OUTPUT START ----')
+                core.info('---- check-parameters.ts / checkParameters() - fetch configuration ----')
+                core.info('---- Fetch URL: https://' + apiUrl + uriPath + queryparams)
+                core.info('---- Fetch Method: ' + fetchOptions.method)
+                core.info('---- Fetch Headers: ' + JSON.stringify(fetchOptions.headers))
+                core.info('---- AutoSelectFamily: ' + (fetchOptions.autoSelectFamily ? 'true' : 'false'))
+                core.info('---- Agent Used: ' + (agent ? 'Yes' : 'No'))
+                core.info('---- Timeout: 30 seconds')
+                core.info('---- DEBUG OUTPUT END ----')
             }
             
             try {
@@ -220,19 +245,70 @@ export async function checkParameters (parameters:any):Promise<string>  {
             } catch (err: any) {
                 clearTimeout(timeoutId);
                 
+                // Always show error details in debug mode
+                if (parameters.debug == 1) {
+                    core.info('---- DEBUG OUTPUT START ----')
+                    core.info('---- check-parameters.ts / checkParameters() - fetch error details ----')
+                    core.info('---- Error Name: ' + err.name)
+                    core.info('---- Error Message: ' + err.message)
+                    core.info('---- Error Stack: ' + err.stack)
+                    core.info('---- Error Code: ' + (err.code || 'Not set'))
+                    
+                    // Extract nested cause information
+                    if (err.cause) {
+                        core.info('---- Error Cause Name: ' + err.cause.name)
+                        core.info('---- Error Cause Message: ' + err.cause.message)
+                        core.info('---- Error Cause Code: ' + (err.cause.code || 'Not set'))
+                        core.info('---- Error Cause Stack: ' + err.cause.stack)
+                        
+                        // Check for additional nested cause
+                        if (err.cause.cause) {
+                            core.info('---- Error Cause Cause Name: ' + err.cause.cause.name)
+                            core.info('---- Error Cause Cause Message: ' + err.cause.cause.message)
+                            core.info('---- Error Cause Cause Code: ' + (err.cause.cause.code || 'Not set'))
+                        }
+                    }
+                    
+                    // Try to extract any available response information
+                    if (err.response) {
+                        core.info('---- Response Status: ' + err.response.status)
+                        core.info('---- Response Status Text: ' + err.response.statusText)
+                        core.info('---- Response URL: ' + err.response.url)
+                        try {
+                            core.info('---- Response Data: ' + JSON.stringify(err.response, (key, value) => {
+                                if (typeof value === 'function' || value === undefined) {
+                                    return '[Function or Undefined]';
+                                }
+                                return value;
+                            }))
+                        } catch (e) {
+                            core.info('---- Response Data: [Error serializing response]')
+                        }
+                    }
+                    
+                    // Log the entire error object for debugging
+                    try {
+                        core.info('---- Full Error Object: ' + JSON.stringify(err, (key, value) => {
+                            if (typeof value === 'function' || value === undefined) {
+                                return '[Function or Undefined]';
+                            }
+                            if (key === 'stack') {
+                                return value ? value.substring(0, 500) + '...' : '[No stack]';
+                            }
+                            return value;
+                        }, 2))
+                    } catch (e) {
+                        core.info('---- Full Error Object: [Error serializing error object]')
+                    }
+                    
+                    core.info('---- DEBUG OUTPUT END ----')
+                }
+                
                 if (err.name === 'AbortError') {
                     core.info('Request timed out after 30 seconds');
                     core.info('This might be due to proxy configuration issues');
                 } else {
-                    core.info('---- DEBUG OUTPUT START ----')
-                    core.info('---- check-parameters.ts / checkParameters() - find policy via API catch error ----')
-                    core.info('---- Error Type: ' + err.name)
-                    core.info('---- Error Message: ' + err.message)
-                    if (err.response) {
-                        core.info('---- Response Status: ' + err.response.status)
-                        core.info('---- Response Data: ' + JSON.stringify(err.response))
-                    }
-                    core.info('---- DEBUG OUTPUT END ----')
+                    core.info('API request failed: ' + err.message);
                 }
                 
                 // Continue execution without policy evaluation
