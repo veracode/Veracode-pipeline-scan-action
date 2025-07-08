@@ -2,7 +2,7 @@ import * as core from '@actions/core'
 import { runScan, getPolicyFile } from './pipeline-scan'
 import * as auth from './auth'
 //import { calculateAuthorizationHeader } from './veracode-hmac'
-import { HttpsProxyAgent } from 'https-proxy-agent';
+import { ProxyAgent } from 'undici';
 
 export async function checkParameters (parameters:any):Promise<string>  {
 
@@ -149,7 +149,7 @@ export async function checkParameters (parameters:any):Promise<string>  {
                 if (proxyUser && proxyPass) {
                     proxyUrl = `http://${encodeURIComponent(proxyUser)}:${encodeURIComponent(proxyPass)}@${proxyHost}:${proxyPort}`;
                 }
-                agent = new HttpsProxyAgent(proxyUrl);
+                agent = new ProxyAgent(proxyUrl);
                 
                 if (parameters.debug == 1) {
                     core.info('---- DEBUG OUTPUT START ----')
@@ -344,7 +344,6 @@ export async function checkParameters (parameters:any):Promise<string>  {
             core.info('---- DEBUG OUTPUT END ----')
         }
 
-            
         var policyFileName = parameters.request_policy.replace(/ /gi, "_")
         core.info('Policy Filen Name: '+policyFileName)
         scanCommand += " --policy_file "+policyFileName+".json"
