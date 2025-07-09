@@ -109,18 +109,19 @@ parameters['store_baseline_file_branch'] = store_baseline_file_branch
 
 const create_baseline_from = core.getInput('create_baseline_from', {required: false} );
 parameters['create_baseline_from'] = create_baseline_from
-//standard or filtered 
+//standard or filtered
 
 const fail_build = core.getInput('fail_build', {required: false} );
 parameters['fail_build'] = fail_build
-//true or false 
+//true or false
 
 const artifact_name = core.getInput('artifact_name', {required: false} );
 parameters['artifact_name'] = artifact_name
-//string 
+//string
 
-
-
+const upload_results = core.getInput('upload_results', {required: false} );
+parameters['upload_results'] = upload_results
+//true or false
 
 
 async function run (parameters:any){
@@ -168,44 +169,47 @@ async function run (parameters:any){
         core.info('---- DEBUG OUTPUT END ----')
     }
 
+    //check if upload_result is enabled
+    if (parameters.upload_results == 'true') {
     //check if results files exists and if so store them as artifacts
-    if ( existsSync(rootDirectory+'/'+parameters.json_output_file && rootDirectory+'/'+parameters.filtered_json_output_file && rootDirectory+'/'+parameters.summary_output_file) ){
-        core.info('Results files exist - storing as artifact')
-    
-        
-        //store output files as artifacts
-        const { DefaultArtifactClient } = require('@actions/artifact')
-        const artifactClient = new DefaultArtifactClient()
-        const artifactName = 'Veracode Pipeline-Scan Results - '+parameters.artifact_name;
-        const files = [
-            parameters.json_output_file,
-            parameters.filtered_json_output_file,
-            parameters.summary_output_file
-        ]
+        if ( existsSync(rootDirectory+'/'+parameters.json_output_file && rootDirectory+'/'+parameters.filtered_json_output_file && rootDirectory+'/'+parameters.summary_output_file) ){
+            core.info('Results files exist - storing as artifact')
 
 
-        const rootDirectory = process.cwd()
-        const options = {
-            continueOnError: true
+            //store output files as artifacts
+            const { DefaultArtifactClient } = require('@actions/artifact')
+            const artifactClient = new DefaultArtifactClient()
+            const artifactName = 'Veracode Pipeline-Scan Results - '+parameters.artifact_name;
+            const files = [
+                parameters.json_output_file,
+                parameters.filtered_json_output_file,
+                parameters.summary_output_file
+            ]
+
+
+            const rootDirectory = process.cwd()
+            const options = {
+                continueOnError: true
+            }
+
+            try {
+                const uploadResult = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options)
+                core.info('Artifact upload result:')
+                core.info(uploadResult)
+            } catch (error) {
+                core.info('Artifact upload failed:')
+                core.info(String(error))
+            }
+
+
+            if (parameters.debug == 1 ){
+                core.info('---- DEBUG OUTPUT START ----')
+                core.info('---- index.ts / run() create artifacts ----')
+                core.info('---- Artifact filenames: '+files)
+                core.info('---- DEBUG OUTPUT END ----')
+            }
+
         }
-
-        try {
-            const uploadResult = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options)
-            core.info('Artifact upload result:')
-            core.info(uploadResult)
-        } catch (error) {
-            core.info('Artifact upload failed:')
-            core.info(String(error))
-        }
-
-
-        if (parameters.debug == 1 ){
-            core.info('---- DEBUG OUTPUT START ----')
-            core.info('---- index.ts / run() create artifacts ----')
-            core.info('---- Artifact filenames: '+files)
-            core.info('---- DEBUG OUTPUT END ----')
-        }
-
     }
     else {
         core.info('Results files do not exist - no artifact to store')
@@ -324,7 +328,7 @@ async function run (parameters:any){
             core.info('---- DEBUG OUTPUT START ----')
             core.info('---- index.ts / run() check if we need to fail the build ----')
             core.info('---- Fail build value found : '+failBuild)
-            core.info('---- DEBUG OUTPUT END ----')     
+            core.info('---- DEBUG OUTPUT END ----')
         }
 
 
