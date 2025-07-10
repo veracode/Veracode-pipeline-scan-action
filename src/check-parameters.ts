@@ -136,7 +136,7 @@ export async function checkParameters (parameters:any):Promise<string>  {
             
             // Add timeout to prevent connection hangs
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+            const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 seconds
             
             const proxyHost = process.env.PROXY_HOST;
             const proxyPort = process.env.PROXY_PORT;
