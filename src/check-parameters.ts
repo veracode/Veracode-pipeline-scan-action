@@ -160,6 +160,7 @@ export async function checkParameters (parameters:any):Promise<string>  {
                     core.info('---- Proxy Pass: ' + (proxyPass ? 'Set' : 'Not set'))
                     core.info('---- Proxy URL: ' + (proxyUser && proxyPass ? 'http://[USER]:[PASS]@' + proxyHost + ':' + proxyPort : proxyUrl))
                     core.info('---- Agent Created: ' + (agent ? 'Yes' : 'No'))
+                    core.info('---- Agent Type: ' + agent.constructor.name)
                     core.info('---- DEBUG OUTPUT END ----')
                 }
             }
@@ -169,11 +170,17 @@ export async function checkParameters (parameters:any):Promise<string>  {
                 core.info('---- DEBUG OUTPUT START ----')
                 core.info('---- check-parameters.ts / checkParameters() - fetch configuration ----')
                 core.info('---- Fetch URL: https://' + apiUrl + uriPath + queryparams)
+                core.info('---- Target Host: ' + apiUrl)
                 core.info('---- Fetch Method: ' + fetchOptions.method)
                 core.info('---- Fetch Headers: ' + JSON.stringify(fetchOptions.headers))
                 core.info('---- AutoSelectFamily: ' + (fetchOptions.autoSelectFamily ? 'true' : 'false'))
                 core.info('---- Agent Used: ' + (agent ? 'Yes' : 'No'))
                 core.info('---- Timeout: 30 seconds')
+                if (agent) {
+                    core.info('---- Connection will go through proxy')
+                } else {
+                    core.info('---- Connection will go directly to target')
+                }
                 core.info('---- DEBUG OUTPUT END ----')
             }
             
