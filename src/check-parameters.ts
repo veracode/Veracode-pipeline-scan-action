@@ -174,8 +174,8 @@ export async function checkParameters (parameters:any):Promise<string>  {
                 core.info('---- Fetch Method: ' + fetchOptions.method)
                 core.info('---- Fetch Headers: ' + JSON.stringify(fetchOptions.headers))
                 core.info('---- AutoSelectFamily: ' + (fetchOptions.autoSelectFamily ? 'true' : 'false'))
-                core.info('---- Agent Used: ' + (agent ? 'Yes' : 'No'))
-                core.info('---- Timeout: 30 seconds')
+                core.info('---- Dispatcher Used: ' + (agent ? 'Yes' : 'No'))
+                core.info('---- Timeout: 60 seconds')
                 if (agent) {
                     core.info('---- Connection will go through proxy')
                 } else {
@@ -188,7 +188,7 @@ export async function checkParameters (parameters:any):Promise<string>  {
                 const response = await fetch('https://'+apiUrl+uriPath+queryparams, {
                     ...fetchOptions,
                     signal: controller.signal,
-                    ...(agent && { agent })
+                    ...(agent && { dispatcher: agent })
                 });
                 
                 clearTimeout(timeoutId);
