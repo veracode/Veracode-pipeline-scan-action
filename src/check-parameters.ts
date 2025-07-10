@@ -193,6 +193,11 @@ export async function checkParameters (parameters:any):Promise<string>  {
                 
                 clearTimeout(timeoutId);
                 
+                // Close the proxy agent to free up resources
+                if (agent) {
+                    await agent.close();
+                }
+                
                 if (parameters.debug == 1 ){
                     core.info('---- DEBUG OUTPUT START ----')
                     core.info('---- check-parameters.ts / checkParameters() - fetch response details ----')
