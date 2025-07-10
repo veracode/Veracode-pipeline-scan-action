@@ -1,11 +1,53 @@
 import * as core from '@actions/core'
 import { runScan, getPolicyFile } from './pipeline-scan'
-import axios from 'axios'
 import * as auth from './auth'
 //import { calculateAuthorizationHeader } from './veracode-hmac'
+import { ProxyAgent } from 'undici';
 
 export async function checkParameters (parameters:any):Promise<string>  {
 
+    // Helper function to build Java command with proxy settings
+    function buildJavaCommand(baseCommand: string): string {
+        const proxyHost = process.env.PROXY_HOST;
+        const proxyPort = process.env.PROXY_PORT;
+        const proxyUser = process.env.PROXY_USER;
+        const proxyPass = process.env.PROXY_PASS;
+
+        if (parameters.debug == 1) {
+            core.info('---- DEBUG OUTPUT START ----')
+            core.info('---- check-parameters.ts / buildJavaCommand() - proxy settings ----')
+            core.info('---- Proxy Host: ' + proxyHost)
+            core.info('---- Proxy Port: ' + proxyPort)
+            core.info('---- Proxy User: ' + (proxyUser || 'Not set'))
+            core.info('---- DEBUG OUTPUT END ----')
+        }
+        
+        if (proxyHost && proxyPort) {
+            let proxyArgs = ` -Dhttp.proxyHost=${proxyHost} -Dhttp.proxyPort=${proxyPort}`;
+            
+            // Add HTTPS proxy settings (same as HTTP for most cases)
+            proxyArgs += ` -Dhttps.proxyHost=${proxyHost} -Dhttps.proxyPort=${proxyPort}`;
+            
+            // Add authentication if provided
+            if (proxyUser && proxyPass) {
+                proxyArgs += ` -Dhttp.proxyUser=${proxyUser} -Dhttp.proxyPassword=${proxyPass}`;
+                proxyArgs += ` -Dhttps.proxyUser=${proxyUser} -Dhttps.proxyPassword=${proxyPass}`;
+            }
+            
+            if (parameters.debug == 1) {
+                core.info('---- DEBUG OUTPUT START ----')
+                core.info('---- check-parameters.ts / buildJavaCommand() - proxy settings ----')
+                core.info('---- Proxy Host: ' + proxyHost)
+                core.info('---- Proxy Port: ' + proxyPort)
+                core.info('---- Proxy User: ' + (proxyUser || 'Not set'))
+                core.info('---- DEBUG OUTPUT END ----')
+            }
+            
+            return baseCommand.replace('java -jar', `java${proxyArgs} -jar`);
+        }
+        
+        return baseCommand;
+    }
 
     if (parameters.debug == 1 ){
         core.info('---- DEBUG OUTPUT START ----')
@@ -14,7 +56,7 @@ export async function checkParameters (parameters:any):Promise<string>  {
         core.info('---- DEBUG OUTPUT END ----')
     }
 
-    let scanCommand:string = 'java -jar pipeline-scan.jar -vid '+parameters.vid+' -vkey '+parameters.vkey
+    let scanCommand:string = buildJavaCommand('java -jar pipeline-scan.jar -vid '+parameters.vid+' -vkey '+parameters.vkey)
     let policyCommand:string = ""
 
     if ( parameters.veracode_policy_name !="" ){
@@ -52,54 +94,237 @@ export async function checkParameters (parameters:any):Promise<string>  {
 
 
 //        try {
-            const response = await axios.request({
+            // Check if proxy environment variables are set
+            const hasProxy = process.env.http_proxy || process.env.HTTP_PROXY || 
+                           process.env.https_proxy || process.env.HTTPS_PROXY;
+            
+            if (parameters.debug == 1) {
+                core.info('---- DEBUG OUTPUT START ----')
+                core.info('---- check-parameters.ts / checkParameters() - proxy detection ----')
+                core.info('---- Proxy detected: ' + (hasProxy ? 'Yes' : 'No'))
+                if (hasProxy) {
+                    core.info('---- HTTP_PROXY: ' + (process.env.http_proxy || process.env.HTTP_PROXY || 'Not set'))
+                    core.info('---- HTTPS_PROXY: ' + (process.env.https_proxy || process.env.HTTPS_PROXY || 'Not set'))
+                }
+                core.info('---- DEBUG OUTPUT END ----')
+            }
+            
+            const fetchOptions: any = {
                 method: 'GET',
                 headers: {
                     'Authorization': auth.generateHeader(path, 'GET', apiUrl, cleanedID, cleanedKEY),
-                },
-                url: 'https://'+apiUrl+uriPath+queryparams
-            });
-            if (parameters.debug == 1 ){
+                }
+            };
+            
+            // Only use autoSelectFamily when no proxy is configured
+            if (!hasProxy) {
+                fetchOptions.autoSelectFamily = true;
+                if (parameters.debug == 1) {
+                    core.info('---- DEBUG OUTPUT START ----')
+                    core.info('---- check-parameters.ts / checkParameters() - using autoSelectFamily ----')
+                    core.info('---- autoSelectFamily: true (no proxy detected)')
+                    core.info('---- DEBUG OUTPUT END ----')
+                }
+            } else {
+                if (parameters.debug == 1) {
+                    core.info('---- DEBUG OUTPUT START ----')
+                    core.info('---- check-parameters.ts / checkParameters() - proxy detected, skipping autoSelectFamily ----')
+                    core.info('---- autoSelectFamily: false (proxy detected)')
+                    core.info('---- DEBUG OUTPUT END ----')
+                }
+            }
+            
+            // Add timeout to prevent connection hangs
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 seconds
+            
+            const proxyHost = process.env.PROXY_HOST;
+            const proxyPort = process.env.PROXY_PORT;
+            const proxyUser = process.env.PROXY_USER;
+            const proxyPass = process.env.PROXY_PASS;
+
+            let agent;
+            if (proxyHost && proxyPort) {
+                let proxyUrl = `http://${proxyHost}:${proxyPort}`;
+                if (proxyUser && proxyPass) {
+                    proxyUrl = `http://${encodeURIComponent(proxyUser)}:${encodeURIComponent(proxyPass)}@${proxyHost}:${proxyPort}`;
+                }
+                agent = new ProxyAgent(proxyUrl);
+                
+                if (parameters.debug == 1) {
+                    core.info('---- DEBUG OUTPUT START ----')
+                    core.info('---- check-parameters.ts / checkParameters() - proxy agent configuration ----')
+                    core.info('---- Proxy Host: ' + proxyHost)
+                    core.info('---- Proxy Port: ' + proxyPort)
+                    core.info('---- Proxy User: ' + (proxyUser || 'Not set'))
+                    core.info('---- Proxy Pass: ' + (proxyPass ? 'Set' : 'Not set'))
+                    core.info('---- Proxy URL: ' + (proxyUser && proxyPass ? 'http://[USER]:[PASS]@' + proxyHost + ':' + proxyPort : proxyUrl))
+                    core.info('---- Agent Created: ' + (agent ? 'Yes' : 'No'))
+                    core.info('---- Agent Type: ' + agent.constructor.name)
+                    core.info('---- DEBUG OUTPUT END ----')
+                }
+            }
+            
+            // Debug fetch configuration before making the request
+            if (parameters.debug == 1) {
                 core.info('---- DEBUG OUTPUT START ----')
-                core.info('---- check-parameters.ts / checkParameters() - find the policy via API----')
-                core.info('---- Response Data ----')
-                core.info(JSON.stringify(response.data))
+                core.info('---- check-parameters.ts / checkParameters() - fetch configuration ----')
+                core.info('---- Fetch URL: https://' + apiUrl + uriPath + queryparams)
+                core.info('---- Target Host: ' + apiUrl)
+                core.info('---- Fetch Method: ' + fetchOptions.method)
+                core.info('---- Fetch Headers: ' + JSON.stringify(fetchOptions.headers))
+                core.info('---- AutoSelectFamily: ' + (fetchOptions.autoSelectFamily ? 'true' : 'false'))
+                core.info('---- Dispatcher Used: ' + (agent ? 'Yes' : 'No'))
+                core.info('---- Timeout: 60 seconds')
+                if (agent) {
+                    core.info('---- Connection will go through proxy')
+                } else {
+                    core.info('---- Connection will go directly to target')
+                }
                 core.info('---- DEBUG OUTPUT END ----')
             }
-
-            if ( response.data.page.total_elements != '0' ){
-
-                if ( response.data._embedded.policy_versions[0].type == 'BUILTIN' ){
-                    core.info('Built-in Policy is required')
-                    core.info('Setting policy to '+parameters.veracode_policy_name)
-                    scanCommand += ' --policy_name "'+parameters.veracode_policy_name+'"'
+            
+            try {
+                const response = await fetch('https://'+apiUrl+uriPath+queryparams, {
+                    ...fetchOptions,
+                    signal: controller.signal,
+                    ...(agent && { dispatcher: agent })
+                });
+                
+                clearTimeout(timeoutId);
+                
+                // Close the proxy agent to free up resources
+                if (agent) {
+                    await agent.close();
                 }
-                else if ( response.data._embedded.policy_versions[0].type == 'CUSTOMER' ){
-                    core.info('Custom Policy is required')
-                    core.info('Downloading custom policy file and setting policy to '+parameters.veracode_policy_name)
+                
+                if (parameters.debug == 1 ){
+                    core.info('---- DEBUG OUTPUT START ----')
+                    core.info('---- check-parameters.ts / checkParameters() - fetch response details ----')
+                    core.info('---- Response Status: ' + response.status)
+                    core.info('---- Response Status Text: ' + response.statusText)
+                    core.info('---- Response URL: ' + response.url)
+                    core.info('---- Response Headers: ' + JSON.stringify(Object.fromEntries(response.headers.entries())))
+                    core.info('---- Response OK: ' + response.ok)
+                    core.info('---- Response Type: ' + response.type)
+                    core.info('---- DEBUG OUTPUT END ----')
+                }
+                
+                const responseData = await response.json();
+                
+                if (parameters.debug == 1 ){
+                    core.info('---- DEBUG OUTPUT START ----')
+                    core.info('---- check-parameters.ts / checkParameters() - find the policy via API----')
+                    core.info('---- Response Data ----')
+                    core.info(JSON.stringify(responseData))
+                    core.info('---- DEBUG OUTPUT END ----')
+                }
 
+                if ( responseData.page.total_elements != '0' ){
 
-                    policyCommand = 'java -jar pipeline-scan.jar -vid '+parameters.vid+' -vkey '+parameters.vkey+' --request_policy "'+parameters.veracode_policy_name+'"'
-                    const policyDownloadOutput = await getPolicyFile(policyCommand,parameters)
-
-                    if (parameters.debug == 1 ){
-                        core.info('---- DEBUG OUTPUT START ----')
-                        core.info('---- check-parameters.ts / checkParameters() - if veracode_policy_name is set and custom policy is required ----')
-                        core.info('---- Policy Download command: '+policyCommand)
-                        core.info('---- Policy Downlaod Output: '+policyDownloadOutput)
-                        core.info('---- DEBUG OUTPUT END ----')
+                    if ( responseData._embedded.policy_versions[0].type == 'BUILTIN' ){
+                        core.info('Built-in Policy is required')
+                        core.info('Setting policy to '+parameters.veracode_policy_name)
+                        scanCommand += ' --policy_name "'+parameters.veracode_policy_name+'"'
                     }
+                    else if ( responseData._embedded.policy_versions[0].type == 'CUSTOMER' ){
+                        core.info('Custom Policy is required')
+                        core.info('Downloading custom policy file and setting policy to '+parameters.veracode_policy_name)
 
-                    var policyFileName = parameters.veracode_policy_name.replace(/ /gi, "_")
-                    core.info('Policy Filen Name: '+policyFileName)
-                    scanCommand += " --policy_file "+policyFileName+".json"
+
+                        policyCommand = buildJavaCommand('java -jar pipeline-scan.jar -vid '+parameters.vid+' -vkey '+parameters.vkey+' --request_policy "'+parameters.veracode_policy_name+'"')
+                        const policyDownloadOutput = await getPolicyFile(policyCommand,parameters)
+
+                        if (parameters.debug == 1 ){
+                            core.info('---- DEBUG OUTPUT START ----')
+                            core.info('---- check-parameters.ts / checkParameters() - if veracode_policy_name is set and custom policy is required ----')
+                            core.info('---- Policy Download command: '+policyCommand)
+                            core.info('---- Policy Downlaod Output: '+policyDownloadOutput)
+                            core.info('---- DEBUG OUTPUT END ----')
+                        }
+
+                        var policyFileName = parameters.veracode_policy_name.replace(/ /gi, "_")
+                        core.info('Policy Filen Name: '+policyFileName)
+                        scanCommand += " --policy_file "+policyFileName+".json"
+                    }
                 }
-            }
-            else if ( response.data.page.total_elements == undefined ){
-                core.info('Something went wrong with fetching the correct policy')
-            }
-            else {
-                core.info('NO POLICY FOUND - NO POLICY WILL BE USED TO RATE FINDINGS')
+                else if ( responseData.page.total_elements == undefined ){
+                    core.info('Something went wrong with fetching the correct policy')
+                }
+                else {
+                    core.info('NO POLICY FOUND - NO POLICY WILL BE USED TO RATE FINDINGS')
+                }
+            } catch (err: any) {
+                clearTimeout(timeoutId);
+                
+                // Always show error details in debug mode
+                if (parameters.debug == 1) {
+                    core.info('---- DEBUG OUTPUT START ----')
+                    core.info('---- check-parameters.ts / checkParameters() - fetch error details ----')
+                    core.info('---- Error Name: ' + err.name)
+                    core.info('---- Error Message: ' + err.message)
+                    core.info('---- Error Stack: ' + err.stack)
+                    core.info('---- Error Code: ' + (err.code || 'Not set'))
+                    
+                    // Extract nested cause information
+                    if (err.cause) {
+                        core.info('---- Error Cause Name: ' + err.cause.name)
+                        core.info('---- Error Cause Message: ' + err.cause.message)
+                        core.info('---- Error Cause Code: ' + (err.cause.code || 'Not set'))
+                        core.info('---- Error Cause Stack: ' + err.cause.stack)
+                        
+                        // Check for additional nested cause
+                        if (err.cause.cause) {
+                            core.info('---- Error Cause Cause Name: ' + err.cause.cause.name)
+                            core.info('---- Error Cause Cause Message: ' + err.cause.cause.message)
+                            core.info('---- Error Cause Cause Code: ' + (err.cause.cause.code || 'Not set'))
+                        }
+                    }
+                    
+                    // Try to extract any available response information
+                    if (err.response) {
+                        core.info('---- Response Status: ' + err.response.status)
+                        core.info('---- Response Status Text: ' + err.response.statusText)
+                        core.info('---- Response URL: ' + err.response.url)
+                        try {
+                            core.info('---- Response Data: ' + JSON.stringify(err.response, (key, value) => {
+                                if (typeof value === 'function' || value === undefined) {
+                                    return '[Function or Undefined]';
+                                }
+                                return value;
+                            }))
+                        } catch (e) {
+                            core.info('---- Response Data: [Error serializing response]')
+                        }
+                    }
+                    
+                    // Log the entire error object for debugging
+                    try {
+                        core.info('---- Full Error Object: ' + JSON.stringify(err, (key, value) => {
+                            if (typeof value === 'function' || value === undefined) {
+                                return '[Function or Undefined]';
+                            }
+                            if (key === 'stack') {
+                                return value ? value.substring(0, 500) + '...' : '[No stack]';
+                            }
+                            return value;
+                        }, 2))
+                    } catch (e) {
+                        core.info('---- Full Error Object: [Error serializing error object]')
+                    }
+                    
+                    core.info('---- DEBUG OUTPUT END ----')
+                }
+                
+                if (err.name === 'AbortError') {
+                    core.info('Request timed out after 30 seconds');
+                    core.info('This might be due to proxy configuration issues');
+                } else {
+                    core.info('API request failed: ' + err.message);
+                }
+                
+                // Continue execution without policy evaluation
+                core.info('Continuing without policy evaluation due to API error');
             }
 /*
         } catch (err: any) {
@@ -120,7 +345,7 @@ export async function checkParameters (parameters:any):Promise<string>  {
     //this will go away in thex version of the action, function is deprecated - start
     if ( parameters.request_policy != ""){
         core.info('Policy file download required')
-        policyCommand = 'java -jar pipeline-scan.jar -vid '+parameters.vid+' -vkey '+parameters.vkey+' --request_policy "'+parameters.request_policy+'"'
+        policyCommand = buildJavaCommand('java -jar pipeline-scan.jar -vid '+parameters.vid+' -vkey '+parameters.vkey+' --request_policy "'+parameters.request_policy+'"')
         const policyDownloadOutput = await getPolicyFile(policyCommand,parameters)
 
         if (parameters.debug == 1 ){
@@ -131,7 +356,6 @@ export async function checkParameters (parameters:any):Promise<string>  {
             core.info('---- DEBUG OUTPUT END ----')
         }
 
-            
         var policyFileName = parameters.request_policy.replace(/ /gi, "_")
         core.info('Policy Filen Name: '+policyFileName)
         scanCommand += " --policy_file "+policyFileName+".json"
@@ -156,6 +380,7 @@ export async function checkParameters (parameters:any):Promise<string>  {
                 scanCommand += " --"+key+" "+value
                 }
             }
+    
 
             if (parameters.debug == 1 ){
                 core.info('---- DEBUG OUTPUT START ----')
@@ -177,4 +402,5 @@ export async function checkParameters (parameters:any):Promise<string>  {
 
     return scanCommand
 }
+
 
