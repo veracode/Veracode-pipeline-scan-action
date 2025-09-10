@@ -103,6 +103,9 @@ inputs:
   artifact_name:
     description: 'Enter the name of the artifact to be uploaded to Github.'
     required: false
+  workflow_app:
+    description: 'Parameter to check whether request coming from workflow app. Takes true or false'
+    required: false 
 
 runs:
   using: 'node20'
