@@ -120,7 +120,7 @@ parameters['artifact_name'] = artifact_name
 //string 
 
 const workflow_app = core.getInput('workflow_app', {required: false} );
-parameters['workflow_app'] = workflow_app
+//parameters['workflow_app'] = workflow_app
 
 
 
@@ -317,7 +317,7 @@ async function run (parameters:any){
         core.info('We are not running on a pull request')
     }
 
-    if ( parameters.fail_build == "true" && parameters.workflow_app == "false"){
+    if ( parameters.fail_build == "true" && workflow_app == "false"){
         core.info('Check if we need to fail the build')
         const failureRegex = /FAILURE: Found \d+ issues!/
         let failBuild = failureRegex.test(scanCommandOutput)
