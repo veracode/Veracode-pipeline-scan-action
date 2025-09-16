@@ -120,6 +120,7 @@ parameters['artifact_name'] = artifact_name
 //string 
 
 const workflow_app = core.getInput('workflow_app', {required: false} );
+console.log("workflow",workflow_app)
 //parameters['workflow_app'] = workflow_app
 
 
