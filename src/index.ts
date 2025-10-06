@@ -173,22 +173,23 @@ async function run (parameters:any){
         core.info('---- DEBUG OUTPUT END ----')
     }
 
+    const { DefaultArtifactClient } = require('@actions/artifact');
+    const artifactV1 = require('@actions/artifact-v1');
+
+    let artifactClient;
+
+    if (parameters?.platformType === 'ENTERPRISE') {
+        artifactClient = artifactV1.create();
+    } else {
+        artifactClient = new DefaultArtifactClient();
+    }
+
     //check if results files exists and if so store them as artifacts
     if ( existsSync(rootDirectory+'/'+parameters.json_output_file && rootDirectory+'/'+parameters.filtered_json_output_file && rootDirectory+'/'+parameters.summary_output_file) ){
         core.info('Results files exist - storing as artifact')
     
         
         //store output files as artifacts
-        const { DefaultArtifactClient } = require('@actions/artifact');
-        const artifactV1 = require('@actions/artifact-v1');
-
-        let artifactClient;
-
-        if (parameters?.platformType === 'ENTERPRISE') {
-            artifactClient = artifactV1.create();
-        } else {
-            artifactClient = new DefaultArtifactClient();
-        }
         const artifactName = 'Veracode Pipeline-Scan Results - '+parameters.artifact_name;
         const files = [
             parameters.json_output_file,
@@ -236,8 +237,6 @@ async function run (parameters:any){
             core.info('Error creating empty results files')
         }
 
-        const { DefaultArtifactClient } = require('@actions/artifact')
-        const artifactClient = new DefaultArtifactClient()
         const artifactName = 'Veracode Pipeline-Scan Results - '+parameters.artifact_name;
         const files = [
             parameters.filtered_json_output_file
