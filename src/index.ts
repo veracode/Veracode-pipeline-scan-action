@@ -121,6 +121,8 @@ parameters['artifact_name'] = artifact_name
 
 const workflow_app = core.getInput('workflow_app', {required: false} );
 
+const platformType = core.getInput('platformType', {required: false} );
+parameters['platformType'] = platformType;
 
 
 
@@ -177,8 +179,16 @@ async function run (parameters:any){
     
         
         //store output files as artifacts
-        const { DefaultArtifactClient } = require('@actions/artifact')
-        const artifactClient = new DefaultArtifactClient()
+        const { DefaultArtifactClient } = require('@actions/artifact');
+        const artifactV1 = require('@actions/artifact-v1');
+
+        let artifactClient;
+
+        if (parameters?.platformType === 'ENTERPRISE') {
+            artifactClient = artifactV1.create();
+        } else {
+            artifactClient = new DefaultArtifactClient();
+        }
         const artifactName = 'Veracode Pipeline-Scan Results - '+parameters.artifact_name;
         const files = [
             parameters.json_output_file,

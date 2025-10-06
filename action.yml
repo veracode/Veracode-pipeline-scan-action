@@ -107,6 +107,10 @@ inputs:
     description: 'Parameter to check whether request coming from workflow app. Takes true or false'
     required: false 
     default: 'false'
+  platformType:
+    description: 'Specifies the platform environment type — use CLOUD for GitHub.com or ENTERPRISE for GitHub Enterprise Server (GHES).'
+    default: 'CLOUD'
+    required: false
 
 runs:
   using: 'node20'
