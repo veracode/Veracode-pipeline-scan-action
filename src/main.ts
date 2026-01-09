@@ -1,5 +1,7 @@
 import { readFileSync, existsSync, fstat, writeFileSync} from 'fs';
 import * as core from '@actions/core'
+import { DefaultArtifactClient } from '@actions/artifact';
+import * as artifactV1 from '@actions/artifact-v1';
 import { downloadJar } from "./pipeline-scan";
 import { runScan } from "./pipeline-scan";
 import { checkParameters } from './check-parameters';
@@ -97,8 +99,8 @@ function getInputParameters(){
     const development_stage = core.getInput('development_stage', {required: false} );
     parameters['development_stage'] = development_stage
 
-    const debug = core.getInput('debug', {required: false} );
-    parameters['debug'] = debug
+    // const debug = core.getInput('debug', {required: false} );
+    // parameters['debug'] = debug
 
     const store_baseline_file = core.getInput('store_baseline_file', {required: false} );
     parameters['store_baseline_file'] = store_baseline_file
@@ -131,18 +133,16 @@ export async function run(): Promise<void> {
     downloadJar()
     let scanCommandValue = await checkParameters(parameters)
 
-    if (parameters.debug == 1 ){
-        core.info('---- DEBUG OUTPUT START ----')
-        core.info('---- index.ts / run() before run ----')
-        core.info('---- Pipeline Scan Command: '+scanCommandValue)
-        core.info('---- DEBUG OUTPUT END ----')
-    }
+    core.debug('---- DEBUG OUTPUT START ----')
+    core.debug('---- index.ts / run() before run ----')
+    core.debug('---- Pipeline Scan Command: '+scanCommandValue)
+    core.debug('---- DEBUG OUTPUT END ----')
 
-    core.info('Running the Pipeline Scan')
+    core.debug('Running the Pipeline Scan')
     let scanCommandOutput = await runScan(scanCommandValue,parameters)
 
-    core.info('Pipeline Scan Output')
-    core.info(scanCommandOutput)
+    core.debug('Pipeline Scan Output')
+    core.debug( scanCommandOutput )
 
     //check if the results files exist and if not create empty files
     if ( !existsSync('results.json') ){
@@ -157,38 +157,41 @@ export async function run(): Promise<void> {
         try {
             writeFileSync(emptyResultsFile,emptyResultsString)
         } catch (error) {
-            core.info('Error creating empty results files')
+            core.warning('Error creating empty results files')
         }
     }
 
     const rootDirectory = process.cwd()
-    if (parameters.debug == 1 ){
-        core.info('---- DEBUG OUTPUT START ----')
-        core.info('---- index.ts / run() before create artifacts ----')
-        core.info('---- Roof folder: '+rootDirectory)
-        core.info('---- Results Json File: '+rootDirectory+'/'+parameters.json_output_file)
-        core.info('---- Filtered Results Json File: '+rootDirectory+'/'+parameters.filtered_json_output_file)
-        core.info('---- Summary Output File: '+rootDirectory+'/'+parameters.summary_output_file)
-        core.info('---- DEBUG OUTPUT END ----')
-    }
+    core.debug('---- DEBUG OUTPUT START ----')
+    core.debug('---- index.ts / run() before create artifacts ----')
+    core.debug('---- Root folder: '+ rootDirectory)
+    core.debug('---- Results Json File: '+rootDirectory+'/'+parameters.json_output_file)
+    core.debug('---- Filtered Results Json File: '+rootDirectory+'/'+parameters.filtered_json_output_file)
+    core.debug('---- Summary Output File: '+rootDirectory+'/'+parameters.summary_output_file)
+    core.debug('---- DEBUG OUTPUT END ----')
 
-    const { DefaultArtifactClient } = require('@actions/artifact');
-    const artifactV1 = require('@actions/artifact-v1');
+
+    //const { DefaultArtifactClient } = require('@actions/artifact');
+    //const artifactV1 = require('@actions/artifact-v1');
     let artifactClient;
 
     if (platformType === 'ENTERPRISE') {
+        core.debug(`Platform Type: Enterprise`);
         artifactClient = artifactV1.create();
-        core.info(`Initialized the artifact object using version V1.`);
+        core.debug(`Initialized the artifact object using version V1.`);
     } else {
         artifactClient = new DefaultArtifactClient();
-        core.info(`Initialized the artifact object using version V2.`);
+        core.debug(`Initialized the artifact object using version V2.`);
     }
 
     //check if results files exists and if so store them as artifacts
-    if ( existsSync(rootDirectory+'/'+parameters.json_output_file && rootDirectory+'/'+parameters.filtered_json_output_file && rootDirectory+'/'+parameters.summary_output_file) ){
+    if ( existsSync(rootDirectory +' /' + 
+        parameters.json_output_file && rootDirectory+'/' + 
+        parameters.filtered_json_output_file && rootDirectory + '/' + 
+        parameters.summary_output_file) ){
+
         core.info('Results files exist - storing as artifact')
     
-        
         //store output files as artifacts
         const artifactName = 'Veracode Pipeline-Scan Results - '+parameters.artifact_name;
         const files = [
@@ -206,25 +209,20 @@ export async function run(): Promise<void> {
         try {
             const uploadResult = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options)
             core.info('Artifact upload result:')
-            core.info(uploadResult)
+            core.info('File Size: ' + (uploadResult.size != undefined ? uploadResult.size : 0))
         } catch (error) {
-            core.info('Artifact upload failed:')
-            core.info(String(error))
+            core.notice('Artifact upload failed:')
+            core.notice(String(error))
         }
 
+        core.debug('---- DEBUG OUTPUT START ----')
+        core.debug('---- index.ts / run() create artifacts ----')
+        core.debug('---- Artifact filenames: '+files)
+        core.debug('---- DEBUG OUTPUT END ----')
 
-        if (parameters.debug == 1 ){
-            core.info('---- DEBUG OUTPUT START ----')
-            core.info('---- index.ts / run() create artifacts ----')
-            core.info('---- Artifact filenames: '+files)
-            core.info('---- DEBUG OUTPUT END ----')
-        }
-
-    }
-    else {
-        core.info('Results files do not exist - no artifact to store')
-
-        core.info(parameters.filtered_json_output_file+' does not exist - creating empty file')
+    } else {
+        core.notice('Results files do not exist - no artifact to store')
+        core.debug(parameters.filtered_json_output_file + ' does not exist - creating empty file')
         let emptyResults = {
             "findings": []
         }
@@ -234,7 +232,7 @@ export async function run(): Promise<void> {
         try {
             writeFileSync(emptyResultsFilteredFile,emptyResultsString)
         } catch (error) {
-            core.info('Error creating empty results files')
+            core.warning('Error creating empty results files')
         }
 
         const artifactName = 'Veracode Pipeline-Scan Results - '+parameters.artifact_name;
@@ -251,30 +249,30 @@ export async function run(): Promise<void> {
         try {
             const uploadResult = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options)
             core.info('Artifact upload result:')
-            core.info(uploadResult)
+            core.info('File Size: ' + (uploadResult.size != undefined ? uploadResult.size : 0))
         } catch (error) {
-            core.info('Artifact upload failed:')
-            core.info(String(error))
+            core.warning('Artifact upload failed:')
+            core.warning(String(error))
         }
     }
 
 
     if ( parameters.store_baseline_file == 'true'){
-        core.info('Baseline File should be stored')
+        core.debug('Baseline File should be stored')
         let commitCommandOutput:any = await commitBasline(parameters)
-        core.info('Git Command Output')
-        core.info(commitCommandOutput)
+        core.debug('Git Command Output')
+        core.debug(commitCommandOutput)
     }
 
-    core.info('check if we run on a pull request')
+    core.debug('check if we run on a pull request')
     let pullRequest = process.env.GITHUB_REF
     let isPR:any = pullRequest?.indexOf("pull")
 
     if ( isPR >= 1 ){
-        core.info("This run is part of a PR, should add some PR comment")
+        core.debug("This run is part of a PR, should add some PR comment")
 
         if ( scanCommandOutput.length >= 1 ){
-            core.info('Results are not empty - adding PR comment')
+            core.debug('Results are not empty - adding PR comment')
 
             const context = github.context
             const repository:any = process.env.GITHUB_REPOSITORY
@@ -291,18 +289,15 @@ export async function run(): Promise<void> {
             commentBody = commentBody.replace(/\n/g,'<br>')
             commentBody = '<br>![](https://www.veracode.com/themes/veracode_new/library/img/veracode-black-hires.svg)<br>' + commentBody
 
-            core.info('Comment Body '+commentBody)
+            core.debug('Comment Body ' + commentBody)
 
-
-            if (parameters.debug == 1 ){
-                core.info('---- DEBUG OUTPUT START ----')
-                core.info('---- index.ts / run() check if on PR  ----')
-                core.info('---- Repository: '+repository)
-                core.info('---- Token: '+token)
-                core.info('---- Comment ID: '+commentID)
-                //core.info('---- Context: '+JSON.stringify(context))
-                core.info('---- DEBUG OUTPUT END ----')
-            }
+            core.debug('---- DEBUG OUTPUT START ----')
+            core.debug('---- index.ts / run() check if on PR  ----')
+            core.debug('---- Repository: '+repository)
+            core.debug('---- Token: '+token)
+            core.debug('---- Comment ID: '+commentID)
+            //core.debug('---- Context: '+JSON.stringify(context))
+            core.debug('---- DEBUG OUTPUT END ----')
 
             try {
                 const octokit = github.getOctokit(token);
@@ -313,35 +308,32 @@ export async function run(): Promise<void> {
                     issue_number: commentID,
                     body: commentBody,
                 });
-                core.info('Adding scan results as comment to PR #'+commentID)
+                core.info('Adding scan results as comment to PR #' + commentID)
             } catch (error:any) {
-                core.info(error);
+                core.debug(error);
             }
         }
         else {
-            core.info('Results are empty - no need to add PR comment')
+            core.debug('Results are empty - no need to add PR comment')
         }
     }
     else {
-        core.info('We are not running on a pull request')
+        core.debug('We are not running on a pull request')
     }
 
     if ( parameters.fail_build == "true" && workflow_app == "false"){
-        core.info('Check if we need to fail the build')
+        core.debug('Check if we need to fail the build')
         const failureRegex = /FAILURE: Found \d+ issues!/
         let failBuild = failureRegex.test(scanCommandOutput)
 
-
-        if (parameters.debug == 1 ){
-            core.info('---- DEBUG OUTPUT START ----')
-            core.info('---- index.ts / run() check if we need to fail the build ----')
-            core.info('---- Fail build value found : '+failBuild)
-            core.info('---- DEBUG OUTPUT END ----')     
-        }
+        core.debug('---- DEBUG OUTPUT START ----')
+        core.debug('---- index.ts / run() check if we need to fail the build ----')
+        core.debug('---- Fail build value found : '+failBuild)
+        core.debug('---- DEBUG OUTPUT END ----')     
 
 
         if ( failBuild ){
-            core.info('There are flaws found that require the build to fail')
+            core.notice('There are flaws found that require the build to fail')
             core.setFailed(scanCommandOutput)
         }
     }

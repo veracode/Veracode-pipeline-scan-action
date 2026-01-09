@@ -82,9 +82,9 @@ inputs:
   development_stage:
     description: 'Enter one these values, which are case-sensitive, for the type of development stage: Development, Testing, Release.'
     required: false
-  debug:
-    description: 'Enable debug mode. 1 for on'
-    required: false
+  # debug:
+  #   description: 'Enable debug mode. 1 for on'
+  #   required: false
   store_baseline_file:
     description: 'Enable the storage of a baseline file. Takes true or false'
     required: false
