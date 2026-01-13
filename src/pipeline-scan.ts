@@ -1,24 +1,43 @@
 #!/usr/bin/env node
 import { exec, execSync, spawn } from "child_process";
-import * as core from '@actions/core'
+import * as core from '@actions/core';
+import exec1 from '@actions/exec'
+import path from 'path';
 import { countReset } from "console";
 import { stringify } from "querystring";
 import { stdin } from "process";
+import { fstat } from "fs";
 
 
 export function downloadJar ()  {
     core.info('Downloading pipeline-scan.jar')
     try {
-        var downloadJar = `curl -sSO https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip`;
+        var downloadJar = 
+            `curl -sSO https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip`;
+        
+        if( core.isDebug() ){}
+        //Debug of CURL
+            //curl --output-dir __temp__/ -v -sSO https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
+        
+        const currentDir = process.cwd();
+        console.debug(`Current working directory: ${currentDir}`);
+       
+       
+        const runner_temp:any = process.env.RUNNER_TEMP;
+        console.debug(`Current working directory: ${runner_temp}`);
+
+        const newDir = process.chdir(runner_temp);
+
+
+
         var getDownloadOutput = execSync(downloadJar).toString()
         core.info('pipeline-scan.jar downloaded')
         
     }
     catch(error:any){
-        core.warning(`Status Code: ${error.status} with '${error.message}'`);
-        
-    }
-    
+        core.error(`Status Code: ${error.status} with '${error.message}'`);
+    } 
+
     try {
         core.info('Decompressing pipeline-scan-LATEST.zip')
         var unzipJar = 'unzip -o pipeline-scan-LATEST.zip'
@@ -26,7 +45,7 @@ export function downloadJar ()  {
         core.info('pipeline_scan.jar unzipped')
     }
     catch(error:any){
-        core.debug(`Status Code: ${error.status} with '${error.message}'`);
+        core.error(`Status Code: ${error.status} with '${error.message}'`);
         core.warning("Pipeline-scan-LATEST.zip could not be unzipped.")
     }
 }
@@ -35,10 +54,9 @@ export function runScan (scanCommand:any,parameters:any){
 
     core.debug('---- DEBUG OUTPUT START ----')
     core.debug('---- pipeline-scan.ts / runScan() ----')
-    core.debug('---- Pipeline-scan scan-command: '+scanCommand)
-    //core.debug('Get Policy File Command Output: '+commandOutput)
+    core.debug('---- Pipeline-scan scan-command: '+ scanCommand)
+    //core.debug('Get Policy File Command Output: '+ commandOutput)
     core.debug('---- DEBUG OUTPUT END ----')
-
 
     let commandOutput = ''
     try {
@@ -60,6 +78,4 @@ export function getPolicyFile (scanCommand:any,parameters:any){
     core.debug('---- DEBUG OUTPUT END ----')
 
     return commandOutput
-  
-
 }
