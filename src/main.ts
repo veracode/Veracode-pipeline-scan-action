@@ -1,5 +1,4 @@
 import { readFileSync, existsSync, fstat, writeFileSync} from 'fs';
-import * as github from '@actions/github'
 import * as core from '@actions/core'
 import { DefaultArtifactClient } from '@actions/artifact';
 import * as artifactV1 from '@actions/artifact-v1';
@@ -10,7 +9,7 @@ import { commitBasline } from './commit';
 import { json } from 'stream/consumers';
 import { stringify } from 'querystring';
 import { env } from "process";
-import { GitHub } from '@actions/github/lib/utils';
+import * as github from '@actions/github'
 
 
 function getInputParameters(){
@@ -128,14 +127,6 @@ function getInputParameters(){
 export async function run(): Promise<void> {
 
     const parameters = getInputParameters()
-    
-    
-    const github_workspace = process.env.GITHUB_WORKSPACE;
-    const runner_temp = process.env.RUNNER_TEMP;
-
-    core.info(`GITHUB_WORKSPACE:= ${github_workspace}`)
-    core.info(`RUNNER_TEMP:= ${runner_temp}`)
-
     const workflow_app = core.getInput('workflow_app', {required: false} )
     const platformType = core.getInput('platformType', {required: false} )
 
@@ -144,11 +135,11 @@ export async function run(): Promise<void> {
 
     core.debug('---- DEBUG OUTPUT START ----')
     core.debug('---- index.ts / run() before run ----')
-    core.debug('---- Pipeline Scan Command: '+ scanCommandValue)
+    core.debug('---- Pipeline Scan Command: '+scanCommandValue)
     core.debug('---- DEBUG OUTPUT END ----')
 
     core.debug('Running the Pipeline Scan')
-    let scanCommandOutput = await runScan( scanCommandValue, parameters)
+    let scanCommandOutput = await runScan(scanCommandValue,parameters)
 
     core.debug('Pipeline Scan Output')
     core.debug( scanCommandOutput )
@@ -193,10 +184,9 @@ export async function run(): Promise<void> {
         core.debug(`Initialized the artifact object using version V2.`);
     }
 
-    
     //check if results files exists and if so store them as artifacts
     if ( existsSync(rootDirectory +' /' + 
-        parameters.json_output_file && rootDirectory+ '/' + 
+        parameters.json_output_file && rootDirectory+'/' + 
         parameters.filtered_json_output_file && rootDirectory + '/' + 
         parameters.summary_output_file) ){
 

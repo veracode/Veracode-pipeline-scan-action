@@ -8,14 +8,11 @@ Thubss.db
 # dotenv environment variables file
 .env
 
-# exclude any content used in workspace for testing
-__github_workspace__/*
-# exclude any content used in runner temp directory
-__runner_temp__/*
-
 VeraDemo_Policy.json
 pipeline-baseline-file.json
-
+filtered_results.json
+results.json
 pipeline-scan-LATEST.zip
 pipeline-scan.jar
 context.json
+helloworld-2.0.jar
