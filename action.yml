@@ -113,7 +113,7 @@ inputs:
     required: false
   retention_days:
     description: >
-      Duration after which artifact will expire in days. 0 means using default retention.
+      Duration after which artifact will expire in days. 0 means using default retention policy.
 
       Minimum 1 day.
       Maximum 90 days unless changed from the repository settings page.
