@@ -1,6 +1,6 @@
 import { readFileSync, existsSync, fstat, writeFileSync} from 'fs';
 import * as core from '@actions/core'
-import { DefaultArtifactClient } from '@actions/artifact';
+import { DefaultArtifactClient, UploadArtifactOptions } from '@actions/artifact';
 import * as artifactV1 from '@actions/artifact-v1';
 import { downloadJar } from "./pipeline-scan";
 import { runScan } from "./pipeline-scan";
@@ -121,6 +121,9 @@ function getInputParameters(){
     parameters['artifact_name'] = artifact_name
     //string 
 
+    let retention_days = core.getInput('retention_days', {required: false} );
+    parameters['retention_days'] = retention_days
+
     return parameters;
 }
 
@@ -240,14 +243,10 @@ export async function run(): Promise<void> {
             parameters.filtered_json_output_file
         ]
 
-
+        const retentionDays = parameters.retention_days;
         const rootDirectory = process.cwd()
-        const options = {
-            continueOnError: true
-        }
-
         try {
-            const uploadResult = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options)
+            const uploadResult = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, { retentionDays: retentionDays })
             core.info('Artifact upload result:')
             core.info('File Size: ' + (uploadResult.size != undefined ? uploadResult.size : 0))
         } catch (error) {
