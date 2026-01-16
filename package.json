@@ -26,7 +26,8 @@
   "scripts": {
     "local-action": "npx @github/local-action . src/main.ts .env",
     "test": "NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 npx jest",
-    "package": "npx ncc build ./src/index.ts --minify --source-map",
+    "package": "npx ncc build ./src/index.ts --minify",
+    "package:dev": "npx ncc build ./src/index.ts --minify --source-map",
     "package:watch": "npm run package -- --watch"
   },
   "dependencies": {
