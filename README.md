@@ -57,6 +57,10 @@ The tool will need some information passed to it as parameters (many are optiona
     * a previously downloaded policy file that should used to rate the findings
   * fail_build:
     * Fail the build upon findings. Takes true or false
+  * retention_days:
+    * Duration after which artifact will expire in days. 0 means using default retention policy.\
+      Minimum 1 day.\
+      Maximum 90 days unless changed from the repository settings page.
 
 * Common
   * timeout

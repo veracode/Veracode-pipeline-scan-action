@@ -8,10 +8,10 @@ import { env } from "process";
 export function commitBasline (parameters:any)  {
 
     if ( parameters.store_baseline_file_branch == "" || parameters.create_baseline_from == "" ){
-        core.info('To store a baseline file you need to set the parameters "store_baseline_file_branch" and "create_baseline_from" in order to work correctly')
+        core.debug('To store a baseline file you need to set the parameters "store_baseline_file_branch" and "create_baseline_from" in order to work correctly')
     }
     else {
-        core.info('Creating git command to push file')
+        core.debug('Creating git command to push file')
 
         let baselineFileName = ""
         if( parameters.create_baseline_from == "standard"){
@@ -21,13 +21,11 @@ export function commitBasline (parameters:any)  {
             baselineFileName = "filtered_results.json"
         }
 
-        core.info('Baseline from : '+baselineFileName)
-        if (parameters.debug == 1 ){
-            core.info('---- DEBUG OUTPUT START ----')
-            core.info('---- commit.ts / commitBasline() ----')
-            core.info('---- Baseline file generated from '+baselineFileName)
-            core.info('---- DEBUG OUTPUT END ----')
-        }
+        core.debug('Baseline from : '+baselineFileName)
+        core.debug('---- DEBUG OUTPUT START ----')
+        core.debug('---- commit.ts / commitBasline() ----')
+        core.debug('---- Baseline file generated from '+baselineFileName)
+        core.debug('---- DEBUG OUTPUT END ----')
 
         //CI_COMMIT_AUTHOR
         //git pull https://github.com/${process.env.GITHUB_REPOSITORY}.git ${parameters.store_baseline_file_branch}
@@ -54,14 +52,11 @@ export function commitBasline (parameters:any)  {
         git commit -m "Veracode Baseline File push from pipeline"
         git push origin HEAD:${parameters.store_baseline_file_branch} --force-with-lease`
 
-        core.info('Git Command: '+gitCommand)
-        
-        if (parameters.debug == 1 ){
-            core.info('---- DEBUG OUTPUT START ----')
-            core.info('---- commit.ts / commitBasline() ----')
-            core.info('---- Git Command: '+gitCommand)
-            core.info('---- DEBUG OUTPUT END ----')
-        }
+        core.debug('Git Command: '+gitCommand)
+        core.debug('---- DEBUG OUTPUT START ----')
+        core.debug('---- commit.ts / commitBasline() ----')
+        core.debug('---- Git Command: '+gitCommand)
+        core.debug('---- DEBUG OUTPUT END ----')
         
         
         let commandOutput = ''
@@ -72,7 +67,4 @@ export function commitBasline (parameters:any)  {
         }
         return commandOutput
     }
-
-
-
 }
