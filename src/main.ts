@@ -121,9 +121,6 @@ function getInputParameters(){
     parameters['artifact_name'] = artifact_name
     //string 
 
-    let retention_days = core.getInput('retention_days', {required: false} );
-    parameters['retention_days'] = retention_days
-
     return parameters;
 }
 
@@ -238,12 +235,17 @@ export async function run(): Promise<void> {
             core.warning('Error creating empty results files')
         }
 
-        const artifactName = 'Veracode Pipeline-Scan Results - '+parameters.artifact_name;
+        const artifactName = 'Veracode Pipeline-Scan Results - '+ parameters.artifact_name;
         const files = [
             parameters.filtered_json_output_file
         ]
 
-        const retentionDays = parameters.retention_days;
+        // Set artifact retention days policy
+        let retentionDays = parseInt(core.getInput('retention_days', {required: false} ), 10);
+        if(isNaN(retentionDays))
+        {
+            retentionDays = 0; //set default retentionDays value to 0 to use system policy.
+        }
         const rootDirectory = process.cwd()
         try {
             const uploadResult = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, { retentionDays: retentionDays })
