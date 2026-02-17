@@ -140,7 +140,7 @@ export async function checkParameters (parameters:any):Promise<string>  {
         
     core.info('create pipeline-scan scan command')
     Object.entries(parameters).forEach(([key, value], index) => {
-        if ( key != 'vid' && key != 'vkey' && key != 'run_method' && key != 'request_policy' && key != 'veracode_policy_name' && key != 'artifact_name' && value != "") {
+        if ( key != 'vid' && key != 'vkey' && key != 'run_method' && key != 'request_policy' && key != 'veracode_policy_name' && key != 'artifact_name' && key != 'esd' && value != "") {
                 
             if (parameters.debug == 1 ){
                 core.info('---- DEBUG OUTPUT START ----')
@@ -148,7 +148,7 @@ export async function checkParameters (parameters:any):Promise<string>  {
                 core.info('---- Parameter: '+key+' value: '+value)
                  core.info('---- DEBUG OUTPUT END ----')
             }
-            if ( key != "debug" && key != "store_baseline_file" && key != "store_baseline_file_branch" && key != "create_baseline_from" && key != "fail_build" ) {
+            if ( key != "debug" && key != "store_baseline_file" && key != "store_baseline_file_branch" && key != "create_baseline_from" && key != "fail_build" && key != "esd" ) {
                 if ( key == "include" ){
                     scanCommand += " --"+key+" '"+value+"'"
                 }
@@ -166,7 +166,16 @@ export async function checkParameters (parameters:any):Promise<string>  {
         }
     });
 
-
+    // Add ESD parameter if enabled
+    if ( parameters.esd == "true" || parameters.esd == true ){
+        scanCommand += ' -esd true'
+        if (parameters.debug == 1 ){
+            core.info('---- DEBUG OUTPUT START ----')
+            core.info('---- check-parameters.ts / checkParameters() - ESD enabled ----')
+            core.info('---- Added -esd true to scan command')
+            core.info('---- DEBUG OUTPUT END ----')
+        }
+    }
 
     if (parameters.debug == 1 ){
         core.info('---- DEBUG OUTPUT START ----')

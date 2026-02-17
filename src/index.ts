@@ -119,6 +119,10 @@ const artifact_name = core.getInput('artifact_name', {required: false} );
 parameters['artifact_name'] = artifact_name
 //string 
 
+const esd = core.getInput('esd', {required: false} );
+parameters['esd'] = esd
+//true or false 
+
 
 
 
