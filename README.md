@@ -126,7 +126,7 @@ The basic yml
         # run the pipeline scan action
         - name: pipeline-scan action step
           id: pipeline-scan
-          uses: veracode/Veracode-pipeline-scan-action@v1.0.12
+          uses: veracode/Veracode-pipeline-scan-action@v1.0.20
           with:
             vid: ${{ secrets.VID }}
             vkey: ${{ secrets.VKEY }}
@@ -156,7 +156,7 @@ Rate the findings according to a policy and fail the build
         # run the pipeline scan action
         - name: pipeline-scan action step
           id: pipeline-scan
-          uses: veracode/Veracode-pipeline-scan-action@v1.0.12
+          uses: veracode/Veracode-pipeline-scan-action@v1.0.20
           with:
             vid: ${{ secrets.VID }}
             vkey: ${{ secrets.VKEY }}
@@ -188,7 +188,7 @@ Sort out previous findings using a baseline file
         # run the pipeline scan action
         - name: pipeline-scan action step
           id: pipeline-scan
-          uses: veracode/Veracode-pipeline-scan-action@v1.0.12
+          uses: veracode/Veracode-pipeline-scan-action@v1.0.20
           with:
             vid: ${{ secrets.VID }}
             vkey: ${{ secrets.VKEY }}
@@ -221,7 +221,7 @@ Sort out previous findings using a baseline file, create a new baseline file and
         # run the pipeline scan action
         - name: pipeline-scan action step
           id: pipeline-scan
-          uses: veracode/Veracode-pipeline-scan-action@v1.0.12
+          uses: veracode/Veracode-pipeline-scan-action@v1.0.20
           with:
             vid: ${{ secrets.VID }}
             vkey: ${{ secrets.VKEY }}
