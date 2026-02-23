@@ -82,9 +82,9 @@ inputs:
   development_stage:
     description: 'Enter one these values, which are case-sensitive, for the type of development stage: Development, Testing, Release.'
     required: false
-  debug:
-    description: 'Enable debug mode. 1 for on'
-    required: false
+  # debug:
+  #   description: 'Enable debug mode. 1 for on'
+  #   required: false
   store_baseline_file:
     description: 'Enable the storage of a baseline file. Takes true or false'
     required: false
@@ -111,6 +111,12 @@ inputs:
     description: 'Specifies the platform environment type — use CLOUD for GitHub.com or ENTERPRISE for GitHub Enterprise Server (GHES).'
     default: 'CLOUD'
     required: false
+  retention_days:
+    description: >
+      Duration after which artifact will expire in days. 0 means using default retention policy.
+
+      Minimum 1 day.
+      Maximum 90 days unless changed from the repository settings page.
 runs:
   using: 'node20'
   main: 'dist/index.js'

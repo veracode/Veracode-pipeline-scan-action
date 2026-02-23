@@ -1,5 +1,13 @@
-.DS_Store
+#Dependecy directory
 node_modules
+
+# OS metadata
+.DS_Store
+Thubss.db
+
+# dotenv environment variables file
+.env
+
 VeraDemo_Policy.json
 pipeline-baseline-file.json
 filtered_results.json

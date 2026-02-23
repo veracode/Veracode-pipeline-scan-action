@@ -15,38 +15,36 @@ export function downloadJar ()  {
         
     }
     catch(error:any){
-        core.info(`Status Code: ${error.status} with '${error.message}'`);
+        core.warning(`Status Code: ${error.status} with '${error.message}'`);
         
     }
     
     try {
+        core.info('Decompressing pipeline-scan-LATEST.zip')
         var unzipJar = 'unzip -o pipeline-scan-LATEST.zip'
         const getUnzipOutput = execSync(unzipJar).toString();
         core.info('pipeline_scan.jar unzipped')
     }
     catch(error:any){
-        console.log(`Status Code: ${error.status} with '${error.message}'`);
-        core.info("Pipeline-scan-LATEST.zip could not be unzipped.")
+        core.debug(`Status Code: ${error.status} with '${error.message}'`);
+        core.warning("Pipeline-scan-LATEST.zip could not be unzipped.")
     }
 }
 
 export function runScan (scanCommand:any,parameters:any){
-    
 
-    if (parameters.debug == 1 ){
-        core.info('---- DEBUG OUTPUT START ----')
-        core.info('---- pipeline-scan.ts / runScan() ----')
-        core.info('---- Pipeline-scan scan-command: '+scanCommand)
-        //core.info('Get Policy File Command Output: '+commandOutput)
-        core.info('---- DEBUG OUTPUT END ----')
-    }
+    core.debug('---- DEBUG OUTPUT START ----')
+    core.debug('---- pipeline-scan.ts / runScan() ----')
+    core.debug('---- Pipeline-scan scan-command: '+scanCommand)
+    //core.debug('Get Policy File Command Output: '+commandOutput)
+    core.debug('---- DEBUG OUTPUT END ----')
 
 
     let commandOutput = ''
     try {
         commandOutput = execSync(scanCommand).toString()
     } catch (ex:any){
-        core.info("Pipeline-scan command failed.\n"+ex.stdout.toString())
+        core.debug("Pipeline-scan command failed.\n" + ex.stdout.toString())
         commandOutput = ex.stdout.toString()
     }
     return commandOutput
@@ -55,13 +53,11 @@ export function runScan (scanCommand:any,parameters:any){
 export function getPolicyFile (scanCommand:any,parameters:any){
     let commandOutput = execSync(scanCommand)
 
-    if (parameters.debug == 1 ){
-        core.info('---- DEBUG OUTPUT START ----')
-        core.info('---- pipeline-scan.ts / getPolicyFile() ----')
-        core.info('---- Pipeline-scan get Policy File command: '+scanCommand)
-        core.info('---- Get Policy File Command Output: '+commandOutput)
-        core.info('---- DEBUG OUTPUT END ----')
-    }
+    core.debug('---- DEBUG OUTPUT START ----')
+    core.debug('---- pipeline-scan.ts / getPolicyFile() ----')
+    core.debug('---- Pipeline-scan get Policy File command: '+scanCommand)
+    core.debug('---- Get Policy File Command Output: '+commandOutput)
+    core.debug('---- DEBUG OUTPUT END ----')
 
     return commandOutput
   
