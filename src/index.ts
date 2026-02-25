@@ -123,6 +123,10 @@ const workflow_app = core.getInput('workflow_app', {required: false} );
 
 const platformType = core.getInput('platformType', {required: false} );
 
+const esd = core.getInput('esd', {required: false} );
+parameters['esd'] = esd
+//true or false 
+
 
 async function run (parameters:any){
     downloadJar()
