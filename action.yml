@@ -115,5 +115,5 @@ inputs:
     description: 'Enable ESD (Extended Static Analysis) mode. Takes true or false'
     required: false
 runs:
-  using: 'node20'
+  using: 'node24'
   main: 'dist/index.js'
