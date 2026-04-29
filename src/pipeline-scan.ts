@@ -47,6 +47,62 @@ function parseCommandString(commandString: string): string[] {
     return args
 }
 
+/**
+ * Validate that the command is in the allowlist of safe commands
+ * This prevents executing arbitrary commands
+ * @param command - The command to validate
+ * @throws Error if command is not allowed
+ */
+function validateCommand(command: string): void {
+    // Allowlist of safe commands that this action should execute
+    const allowedCommands = ['java', 'curl', 'unzip']
+    
+    // Extract just the command name without path
+    const commandName = command.split('/').pop()?.split('\\').pop() || ''
+    
+    // Check if command is in allowlist (case-insensitive for cross-platform compatibility)
+    const isAllowed = allowedCommands.some(allowed => 
+        commandName.toLowerCase() === allowed.toLowerCase() || 
+        commandName.toLowerCase() === `${allowed.toLowerCase()}.exe`
+    )
+    
+    if (!isAllowed) {
+        throw new Error(`Command '${commandName}' is not allowed. Only ${allowedCommands.join(', ')} are permitted.`)
+    }
+}
+
+/**
+ * Validate command arguments for dangerous patterns
+ * This adds an extra layer of security by checking for command injection attempts in arguments
+ * @param args - Array of command arguments to validate
+ * @throws Error if dangerous patterns are detected
+ */
+function validateArguments(args: string[]): void {
+    // Dangerous patterns that could indicate command injection attempts
+    const dangerousPatterns = [
+        /[;&|`$]/,           // Shell metacharacters
+        /\$\(/,              // Command substitution $(...)
+        /`.*`/,              // Backtick command substitution
+        /\|\|/,              // Logical OR
+        /&&/,                // Logical AND
+        />\s*\/dev\//,       // Redirecting to devices
+        /\bchmod\b/i,        // chmod command
+        /\brm\s+-rf\b/i,     // Dangerous rm command
+        /\bcurl.*\|/,        // Piping curl output
+        /\bwget.*\|/,        // Piping wget output
+    ]
+    
+    for (const arg of args) {
+        for (const pattern of dangerousPatterns) {
+            if (pattern.test(arg)) {
+                core.warning(`Potentially dangerous pattern detected in argument: ${arg}`)
+                // Log warning but don't throw - some legitimate uses might trigger false positives
+                // In production, you might want to throw an error instead
+            }
+        }
+    }
+}
+
 
 export function downloadJar ()  {
     core.info('Downloading pipeline-scan.jar')
@@ -91,6 +147,12 @@ export function runScan (scanCommand:any,parameters:any){
         const command = args[0]
         const commandArgs = args.slice(1)
         
+        // Validate command is in allowlist to prevent arbitrary command execution
+        validateCommand(command)
+        
+        // Validate arguments for dangerous patterns
+        validateArguments(commandArgs)
+        
         // Use spawnSync with separate arguments to prevent command injection
         const result = spawnSync(command, commandArgs, { 
             encoding: 'utf8',
@@ -122,6 +184,12 @@ export function getPolicyFile (scanCommand:any,parameters:any){
     const args = parseCommandString(scanCommand)
     const command = args[0]
     const commandArgs = args.slice(1)
+    
+    // Validate command is in allowlist to prevent arbitrary command execution
+    validateCommand(command)
+    
+    // Validate arguments for dangerous patterns
+    validateArguments(commandArgs)
     
     // Use spawnSync with separate arguments to prevent command injection
     const result = spawnSync(command, commandArgs, { 

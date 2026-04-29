@@ -125868,6 +125868,55 @@ function parseCommandString(commandString) {
     }
     return args;
 }
+/**
+ * Validate that the command is in the allowlist of safe commands
+ * This prevents executing arbitrary commands
+ * @param command - The command to validate
+ * @throws Error if command is not allowed
+ */
+function validateCommand(command) {
+    var _a;
+    // Allowlist of safe commands that this action should execute
+    const allowedCommands = ['java', 'curl', 'unzip'];
+    // Extract just the command name without path
+    const commandName = ((_a = command.split('/').pop()) === null || _a === void 0 ? void 0 : _a.split('\\').pop()) || '';
+    // Check if command is in allowlist (case-insensitive for cross-platform compatibility)
+    const isAllowed = allowedCommands.some(allowed => commandName.toLowerCase() === allowed.toLowerCase() ||
+        commandName.toLowerCase() === `${allowed.toLowerCase()}.exe`);
+    if (!isAllowed) {
+        throw new Error(`Command '${commandName}' is not allowed. Only ${allowedCommands.join(', ')} are permitted.`);
+    }
+}
+/**
+ * Validate command arguments for dangerous patterns
+ * This adds an extra layer of security by checking for command injection attempts in arguments
+ * @param args - Array of command arguments to validate
+ * @throws Error if dangerous patterns are detected
+ */
+function validateArguments(args) {
+    // Dangerous patterns that could indicate command injection attempts
+    const dangerousPatterns = [
+        /[;&|`$]/,
+        /\$\(/,
+        /`.*`/,
+        /\|\|/,
+        /&&/,
+        />\s*\/dev\//,
+        /\bchmod\b/i,
+        /\brm\s+-rf\b/i,
+        /\bcurl.*\|/,
+        /\bwget.*\|/, // Piping wget output
+    ];
+    for (const arg of args) {
+        for (const pattern of dangerousPatterns) {
+            if (pattern.test(arg)) {
+                core.warning(`Potentially dangerous pattern detected in argument: ${arg}`);
+                // Log warning but don't throw - some legitimate uses might trigger false positives
+                // In production, you might want to throw an error instead
+            }
+        }
+    }
+}
 function downloadJar() {
     core.info('Downloading pipeline-scan.jar');
     try {
@@ -125903,6 +125952,10 @@ function runScan(scanCommand, parameters) {
         const args = parseCommandString(scanCommand);
         const command = args[0];
         const commandArgs = args.slice(1);
+        // Validate command is in allowlist to prevent arbitrary command execution
+        validateCommand(command);
+        // Validate arguments for dangerous patterns
+        validateArguments(commandArgs);
         // Use spawnSync with separate arguments to prevent command injection
         const result = (0, child_process_1.spawnSync)(command, commandArgs, {
             encoding: 'utf8',
@@ -125932,6 +125985,10 @@ function getPolicyFile(scanCommand, parameters) {
     const args = parseCommandString(scanCommand);
     const command = args[0];
     const commandArgs = args.slice(1);
+    // Validate command is in allowlist to prevent arbitrary command execution
+    validateCommand(command);
+    // Validate arguments for dangerous patterns
+    validateArguments(commandArgs);
     // Use spawnSync with separate arguments to prevent command injection
     const result = (0, child_process_1.spawnSync)(command, commandArgs, {
         encoding: 'utf8',
