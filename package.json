@@ -20,5 +20,8 @@
   "devDependencies": {
     "@types/node": "^18.19.34",
     "@types/sjcl": "^1.0.32"
+  },
+  "overrides": {
+    "undici": "^7.0.0"
   }
 }
