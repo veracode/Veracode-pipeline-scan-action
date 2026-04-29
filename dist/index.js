@@ -110144,90 +110144,89 @@ function checkParameters(parameters) {
         }
         let scanCommand = 'java -jar pipeline-scan.jar -vid ' + parameters.vid + ' -vkey ' + parameters.vkey;
         let policyCommand = "";
-        if (parameters.veracode_policy_name != "") {
-            core.info('Veracode Policy evaluation is required');
-            core.info('Check the region to select the correct platform');
-            if (parameters.vid.startsWith('vera01ei-')) {
-                var apiUrl = 'api.veracode.eu';
-                var cleanedID = (_b = (_a = parameters.vid) === null || _a === void 0 ? void 0 : _a.replace('vera01ei-', '')) !== null && _b !== void 0 ? _b : '';
-                var cleanedKEY = (_d = (_c = parameters.vkey) === null || _c === void 0 ? void 0 : _c.replace('vera01es-', '')) !== null && _d !== void 0 ? _d : '';
-                core.info('Region: EU');
-            }
-            else {
-                var apiUrl = 'api.veracode.com';
-                var cleanedID = parameters.vid;
-                var cleanedKEY = parameters.vkey;
-                core.info('Region: US');
-            }
-            core.info('Check whether a built-in or a custom policy is required');
-            const uriPath = '/appsec/v1/policies';
-            const queryparams = '?name=' + encodeURIComponent(parameters.veracode_policy_name);
-            const path = uriPath + queryparams;
-            const appUrl = apiUrl + uriPath + queryparams;
-            //const headers = {'Authorization':auth.generateHeader(appUrl, 'GET', apiUrl, cleanedID, cleanedKEY)}
-            core.info('---- DEBUG OUTPUT START ----');
-            core.info('---- check-parameters.ts / checkParameters() - if veracode_policy_name is set - show parameters ----');
-            core.info('---- Response Data ----');
-            core.info('---- URI Path: ' + uriPath);
-            core.info('---- Query Params: ' + queryparams);
-            core.info('---- Path: ' + path);
-            core.info('---- App Url: ' + appUrl);
-            core.info('---- DEBUG OUTPUT END ----');
-            //        try {
-            const response = yield axios_1.default.request({
-                method: 'GET',
-                headers: {
-                    'Authorization': auth.generateHeader(path, 'GET', apiUrl, cleanedID, cleanedKEY),
-                },
-                url: 'https://' + apiUrl + uriPath + queryparams
-            });
-            if (parameters.debug == 1) {
-                core.info('---- DEBUG OUTPUT START ----');
-                core.info('---- check-parameters.ts / checkParameters() - find the policy via API----');
-                core.info('---- Response Data ----');
-                core.info(JSON.stringify(response.data));
-                core.info('---- DEBUG OUTPUT END ----');
-            }
-            if (response.data.page.total_elements != '0') {
-                if (response.data._embedded.policy_versions[0].type == 'BUILTIN') {
-                    core.info('Built-in Policy is required');
-                    core.info('Setting policy to ' + parameters.veracode_policy_name);
-                    scanCommand += ' --policy_name "' + parameters.veracode_policy_name + '"';
-                }
-                else if (response.data._embedded.policy_versions[0].type == 'CUSTOMER') {
-                    core.info('Custom Policy is required');
-                    core.info('Downloading custom policy file and setting policy to ' + parameters.veracode_policy_name);
-                    policyCommand = 'java -jar pipeline-scan.jar -vid ' + parameters.vid + ' -vkey ' + parameters.vkey + ' --request_policy "' + parameters.veracode_policy_name + '"';
-                    const policyDownloadOutput = yield (0, pipeline_scan_1.getPolicyFile)(policyCommand, parameters);
-                    if (parameters.debug == 1) {
-                        core.info('---- DEBUG OUTPUT START ----');
-                        core.info('---- check-parameters.ts / checkParameters() - if veracode_policy_name is set and custom policy is required ----');
-                        core.info('---- Policy Download command: ' + policyCommand);
-                        core.info('---- Policy Downlaod Output: ' + policyDownloadOutput);
-                        core.info('---- DEBUG OUTPUT END ----');
-                    }
-                    var policyFileName = parameters.veracode_policy_name.replace(/ /gi, "_");
-                    core.info('Policy Filen Name: ' + policyFileName);
-                    scanCommand += " --policy_file " + policyFileName + ".json";
-                }
-            }
-            else if (response.data.page.total_elements == undefined) {
-                core.info('Something went wrong with fetching the correct policy');
-            }
-            else {
-                core.info('NO POLICY FOUND - NO POLICY WILL BE USED TO RATE FINDINGS');
-            }
-            /*
-                    } catch (err: any) {
-                        core.info('---- DEBUG OUTPUT START ----')
-                        core.info('---- check-parameters.ts / checkParameters() - find policy via API catch error ----')
-                        core.info('---- Response Data ----')
-                        core.info(err.response)
-                        core.info('---- DEBUG OUTPUT END ----')
-                        console.error(err.response);
-                    }
-            */
+        const policyName = yield (0, pipeline_scan_1.getPolicyNameByProfileName)(parameters);
+        core.info('Veracode Policy evaluation is required');
+        core.info('Check the region to select the correct platform');
+        if (parameters.vid.startsWith('vera01ei-')) {
+            var apiUrl = 'api.veracode.eu';
+            var cleanedID = (_b = (_a = parameters.vid) === null || _a === void 0 ? void 0 : _a.replace('vera01ei-', '')) !== null && _b !== void 0 ? _b : '';
+            var cleanedKEY = (_d = (_c = parameters.vkey) === null || _c === void 0 ? void 0 : _c.replace('vera01es-', '')) !== null && _d !== void 0 ? _d : '';
+            core.info('Region: EU');
         }
+        else {
+            var apiUrl = 'api.veracode.com';
+            var cleanedID = parameters.vid;
+            var cleanedKEY = parameters.vkey;
+            core.info('Region: US');
+        }
+        core.info('Check whether a built-in or a custom policy is required');
+        const uriPath = '/appsec/v1/policies';
+        const queryparams = '?name=' + encodeURIComponent(policyName);
+        const path = uriPath + queryparams;
+        const appUrl = apiUrl + uriPath + queryparams;
+        //const headers = {'Authorization':auth.generateHeader(appUrl, 'GET', apiUrl, cleanedID, cleanedKEY)}
+        core.info('---- DEBUG OUTPUT START ----');
+        core.info('---- check-parameters.ts / checkParameters() - if veracode_policy_name is set - show parameters ----');
+        core.info('---- Response Data ----');
+        core.info('---- URI Path: ' + uriPath);
+        core.info('---- Query Params: ' + queryparams);
+        core.info('---- Path: ' + path);
+        core.info('---- App Url: ' + appUrl);
+        core.info('---- DEBUG OUTPUT END ----');
+        //        try {
+        const response = yield axios_1.default.request({
+            method: 'GET',
+            headers: {
+                'Authorization': auth.generateHeader(path, 'GET', apiUrl, cleanedID, cleanedKEY),
+            },
+            url: 'https://' + apiUrl + uriPath + queryparams
+        });
+        if (parameters.debug == 1) {
+            core.info('---- DEBUG OUTPUT START ----');
+            core.info('---- check-parameters.ts / checkParameters() - find the policy via API----');
+            core.info('---- Response Data ----');
+            core.info(JSON.stringify(response.data));
+            core.info('---- DEBUG OUTPUT END ----');
+        }
+        if (response.data.page.total_elements != '0') {
+            if (response.data._embedded.policy_versions[0].type == 'BUILTIN') {
+                core.info('Built-in Policy is required');
+                core.info('Setting policy to ' + policyName);
+                scanCommand += ' --policy_name "' + policyName + '"';
+            }
+            else if (response.data._embedded.policy_versions[0].type == 'CUSTOMER') {
+                core.info('Custom Policy is required');
+                core.info('Downloading custom policy file and setting policy to ' + policyName);
+                policyCommand = 'java -jar pipeline-scan.jar -vid ' + parameters.vid + ' -vkey ' + parameters.vkey + ' --request_policy "' + policyName + '"';
+                const policyDownloadOutput = yield (0, pipeline_scan_1.getPolicyFile)(policyCommand, parameters);
+                if (parameters.debug == 1) {
+                    core.info('---- DEBUG OUTPUT START ----');
+                    core.info('---- check-parameters.ts / checkParameters() - if veracode_policy_name is set and custom policy is required ----');
+                    core.info('---- Policy Download command: ' + policyCommand);
+                    core.info('---- Policy Downlaod Output: ' + policyDownloadOutput);
+                    core.info('---- DEBUG OUTPUT END ----');
+                }
+                var policyFileName = policyName.replace(/ /gi, "_");
+                core.info('Policy Filen Name: ' + policyFileName);
+                scanCommand += " --policy_file " + policyFileName + ".json";
+            }
+        }
+        else if (response.data.page.total_elements == undefined) {
+            core.info('Something went wrong with fetching the correct policy');
+        }
+        else {
+            core.info('NO POLICY FOUND - NO POLICY WILL BE USED TO RATE FINDINGS');
+        }
+        /*
+                } catch (err: any) {
+                    core.info('---- DEBUG OUTPUT START ----')
+                    core.info('---- check-parameters.ts / checkParameters() - find policy via API catch error ----')
+                    core.info('---- Response Data ----')
+                    core.info(err.response)
+                    core.info('---- DEBUG OUTPUT END ----')
+                    console.error(err.response);
+                }
+        */
         //this will go away in thex version of the action, function is deprecated - start
         if (parameters.request_policy != "") {
             core.info('Policy file download required');
@@ -110240,7 +110239,7 @@ function checkParameters(parameters) {
                 core.info('---- Policy Downlaod Output: ' + policyDownloadOutput);
                 core.info('---- DEBUG OUTPUT END ----');
             }
-            var policyFileName = parameters.request_policy.replace(/ /gi, "_");
+            let policyFileName = parameters.request_policy.replace(/ /gi, "_");
             core.info('Policy Filen Name: ' + policyFileName);
             scanCommand += " --policy_file " + policyFileName + ".json";
         }
@@ -110254,7 +110253,7 @@ function checkParameters(parameters) {
                     core.info('---- Parameter: ' + key + ' value: ' + value);
                     core.info('---- DEBUG OUTPUT END ----');
                 }
-                if (key != "debug" && key != "store_baseline_file" && key != "store_baseline_file_branch" && key != "create_baseline_from" && key != "fail_build" && key != "esd") {
+                if (key != "debug" && key != "store_baseline_file" && key != "store_baseline_file_branch" && key != "create_baseline_from" && key != "fail_build" && key != "esd" && key != "app_name") {
                     if (key == "include") {
                         scanCommand += " --" + key + " '" + value + "'";
                     }
@@ -110514,6 +110513,8 @@ const platformType = core.getInput('platformType', { required: false });
 const esd = core.getInput('esd', { required: false });
 parameters['esd'] = esd;
 //true or false 
+const app_name = core.getInput('app_name', { required: false });
+parameters['app_name'] = app_name;
 function run(parameters) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
@@ -110734,10 +110735,24 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getPolicyFile = exports.runScan = exports.downloadJar = void 0;
+exports.getApplicationByName = exports.getPolicyNameByProfileName = exports.getPolicyFile = exports.runScan = exports.downloadJar = void 0;
 const child_process_1 = __nccwpck_require__(35317);
 const core = __importStar(__nccwpck_require__(51055));
+const axios_1 = __importDefault(__nccwpck_require__(69498));
+const auth = __importStar(__nccwpck_require__(35930));
 function downloadJar() {
     core.info('Downloading pipeline-scan.jar');
     try {
@@ -110790,6 +110805,82 @@ function getPolicyFile(scanCommand, parameters) {
     return commandOutput;
 }
 exports.getPolicyFile = getPolicyFile;
+function getPolicyNameByProfileName(inputs) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const appname = inputs.app_name;
+        const vid = inputs.vid;
+        const vkey = inputs.vkey;
+        let policyName = '';
+        try {
+            const application = yield getApplicationByName(appname, vid, vkey);
+            policyName = application.profile.policies[0].name;
+        }
+        catch (error) {
+            core.info(`No application found with name ${appname}`);
+            policyName = inputs.veracode_policy_name;
+        }
+        core.info(`Setting the Policy to ${policyName}`);
+        return policyName;
+    });
+}
+exports.getPolicyNameByProfileName = getPolicyNameByProfileName;
+function getApplicationByName(appname, vid, vkey) {
+    var _a, _b, _c;
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            if (vid.startsWith('vera01ei-')) {
+                var apiUrl = 'api.veracode.eu';
+                var cleanedID = (_a = vid === null || vid === void 0 ? void 0 : vid.replace('vera01ei-', '')) !== null && _a !== void 0 ? _a : '';
+                var cleanedKEY = (_b = vkey === null || vkey === void 0 ? void 0 : vkey.replace('vera01es-', '')) !== null && _b !== void 0 ? _b : '';
+                core.info('Region: EU');
+            }
+            else {
+                var apiUrl = 'api.veracode.com';
+                var cleanedID = vid;
+                var cleanedKEY = vkey;
+                core.info('Region: US');
+            }
+            const resourceUri = `/appsec/v1/applications`;
+            const queryparams = '?name=' + encodeURIComponent(appname);
+            const path = resourceUri + queryparams;
+            const appUrl = apiUrl + resourceUri + queryparams;
+            const response = yield axios_1.default.request({
+                method: 'GET',
+                headers: {
+                    'Authorization': auth.generateHeader(path, 'GET', apiUrl, cleanedID, cleanedKEY),
+                },
+                url: 'https://' + appUrl
+            });
+            const applications = ((_c = response.data._embedded) === null || _c === void 0 ? void 0 : _c.applications) || [];
+            if (applications.length === 0) { // no application with the given name was found
+                core.warning(`No application found with name ${appname}`);
+                core.info("Setting the Policy to User Defined Policy");
+                return [];
+            }
+            const filteredApplications = applications.filter(app => { var _a; return ((_a = app.profile) === null || _a === void 0 ? void 0 : _a.name) === appname; });
+            if (filteredApplications.length === 0) { // no application with the exact given name was found
+                core.warning(`No application found with exact name ${JSON.stringify(appname)}. Returning the first application from the list in the original API query.`);
+                return applications[0];
+            }
+            else if (filteredApplications.length > 1) {
+                core.warning(`Multiple applications (${filteredApplications.length}) found with exact name ${JSON.stringify(appname)}. Returning the first application from the filtered list.`);
+            }
+            else { // exactly one application with the exact given name was found
+                if (applications.length > 1) {
+                    core.info(`One application found with exact name ${JSON.stringify(appname)}. While there were ${JSON.stringify(applications.length)} applications starting with ${JSON.stringify(appname)}.`);
+                }
+                else {
+                    core.info(`One application found with exact name ${JSON.stringify(appname)}.`);
+                }
+            }
+            return filteredApplications[0];
+        }
+        catch (error) {
+            throw error;
+        }
+    });
+}
+exports.getApplicationByName = getApplicationByName;
 
 
 /***/ }),
