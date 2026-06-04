@@ -114,6 +114,9 @@ inputs:
   esd:
     description: 'Enable ESD (Extended Static Analysis) mode. Takes true or false'
     required: false
+  app_name:
+    description: 'Veracode Application Name'
+    required: false
 runs:
-  using: 'node20'
+  using: 'node24'
   main: 'dist/index.js'
