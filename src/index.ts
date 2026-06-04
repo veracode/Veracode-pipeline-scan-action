@@ -127,6 +127,9 @@ const esd = core.getInput('esd', {required: false} );
 parameters['esd'] = esd
 //true or false 
 
+const app_name = core.getInput('app_name', {required: false} );
+parameters['app_name'] = app_name
+
 
 async function run (parameters:any){
     downloadJar()
