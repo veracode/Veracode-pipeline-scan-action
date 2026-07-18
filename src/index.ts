@@ -306,7 +306,8 @@ async function run (parameters:any){
             }
 
             try {
-                const octokit = github.getOctokit(token);
+                const baseUrl = process.env.GITHUB_API_URL || 'https://api.github.com';
+                const octokit = github.getOctokit(token, { baseUrl });
 
                 const { data: comment } = await octokit.rest.issues.createComment({
                     owner: repo[0],

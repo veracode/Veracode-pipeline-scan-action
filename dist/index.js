@@ -95859,7 +95859,8 @@ function run(parameters) {
                     core.info('---- DEBUG OUTPUT END ----');
                 }
                 try {
-                    const octokit = github.getOctokit(token);
+                    const baseUrl = process.env.GITHUB_API_URL || 'https://api.github.com';
+                    const octokit = github.getOctokit(token, { baseUrl });
                     const { data: comment } = yield octokit.rest.issues.createComment({
                         owner: repo[0],
                         repo: repo[1],
